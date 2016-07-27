@@ -1,0 +1,119 @@
+\documentclass[12pt, oneside]{article}
+
+\begin{document}
+
+\title{Model Inference from Protein Time-Course in Hematopoietic Stem Cells}
+
+\date{\today}
+
+\author{Pandu Raharja \and Rene Schoeffel}
+
+\maketitle
+
+\begin{abstract}
+Stochasticity of gene expression becomes apparent when studying the dynamics of single cells rather tan a population of cells. These fluctuations in gene expression in fact reveal more information about the underlying mechanisms of transcription and translation than one could obtain from population averages.
+
+In this paper we developed a particle filtering algorithm to infer the parameters of stochastic models from single cell time series data. In particular, we apply this method to time-lapse microscopy data of two transcription factors (\texttt{Pu.1} and \texttt{Gata.1}) in blood stem cells. These transcription are thought to play a major role in stem cell differentiation.
+
+Our results provided several insights into the dynamics of blood stem cells maturation and specifically in the single ell environment, we managed to gain several valuable insigts on the dynamics of the interaction between two transcription factors on the outcome of cell maturation.
+\end{abstract}
+
+\section{Models}
+
+\subsection{Particle Filtering}
+
+\subsubsection{Particle}
+
+We use particle filtering in our simulation. Particle filtering is a family of methods that use utilize the concept of \textit{particle}. A particle $\mathcal{K}$ is defined as a triple of trajectory $X$, parameter set $\theta$ and assumed model $\mathcal{M}$,
+
+$$
+\mathcal{K} := (X, \theta, \mathcal{M})
+$$
+
+Note that a trajectory is different from the experimental data $\mathcal{D}$. A trajectory is the result of the simulation done by applying the parameters onto our model. In functional notation we would assume the i-th value of the trajectory $X_i$ to be a function of the i-th value of the trajectory, the model and the parameters,
+
+$$
+X_i = f(X_{i - 1}, \mathcal{M}, \theta)
+$$
+
+\subsubsection{Posterior}
+
+Our posterior describes the probability of having the trajectory $X$ and parameter $\theta$ given the observation $\mathcal{D}$,
+
+$$
+P(X, \theta | \mathcal{D})
+$$
+
+We could understand this as the probability of having our simulation return a given set of values \textit{and} having the parameter set $\theta$ given that we previously observed the experimental data $\mathcal{D}$. Using Bayes' Theorem we could further expand our posterior into an update rule,
+
+$$
+P(X, \theta | \mathcal{D}) = \frac{P(\mathcal{D} | X, \theta)  P(X, \theta)}{P(\mathcal{D})}
+$$
+
+In our simulation we know that, to compute prior $P(\mathcal{D} | X, \theta)$, only knowledge about the trajectory of the simulation is needed. Hence, we could simplify our prior,
+
+$$P(\mathcal{D} | X, \theta) = P(\mathcal{D} | X)$$
+
+Not that the above equation inherently assumes that $\mathcal{D}$ is only directly dependent on $X$ and $X$ is in turn only directly dependent on $\theta$. Incorporating this onto our update rule, and expanding the definition of $P(X, \theta)$ using chain rule, we get
+
+$$
+P(X, \theta | \mathcal{D}) = \frac{P(\mathcal{D} | X)  P(X | \theta) \pi(\theta)}{P(\mathcal{D})}
+$$
+
+One of the interesting aspects of our is the fact that the i-th simulation result is only dependent on previous simulation, a property known as \textit{Markov property}. We could thus rewrite the update rule as follow,
+
+% TODO correct the second product definition. It seems off
+$$
+P(X, \theta | \mathcal{D}) = \frac{\prod_{i=0}^{N} P(\mathcal{D}_i | X_i) \cdot P(X_0) \cdot \prod_{l=1}^{N} P(X_{[t-1, ti]} | X_i, \theta) \cdot \pi(\theta)}{P(\mathcal{D})}
+$$
+
+\subsubsection{Parameters}
+
+During the simulation we assumes certain parameters that would influence the trajectory of the simulation. The parameter set $\theta$ could then mathematically be understood as P-tuple containing all the parameters that are assumed in the simulation,
+
+$$P := (P_0, P_1, \dots , P_P)$$
+
+
+\subsubsection{Prior}
+
+Our prior $\pi(\theta)$ could be expanded by assuming the independent of each parameter $\theta_i$ within the parameter set $\theta$,
+
+$$\pi(\theta) = \prod_{i=1}^{P} \pi(\theta_i)$$
+
+Specifically for this simulation, we assume our prior to be Gamma distributed with the parameters $\alpha$ and $\beta$,
+
+$$\pi(\theta) = \prod_{i=1}^{P} Ga(\theta_i, \alpha_i, \beta_i)$$
+
+We used Gamma distribution as our prior due to the fact that a conjugate prior of a Gamma distributed random variable is also Gamma distributed.
+
+\subsection{Simulation Process}
+
+The simulation is run in roughly following high level steps:
+
+\begin{enumerate}
+\item Initialization of parameters $\theta$.
+\item Input of data $\mathcal{D}$.
+\item Particle filtering routine:
+
+\begin{enumerate}
+\item Generation of initial particles for step i
+
+$$Ki := (K_{i1}, K_{i2}, \dots, K_{im})$$
+
+\item Simulation run of each particle $K_{ij}$
+\item Weighting of each particle. The weight is a function of probability of observing the data given the simulation result.
+
+$$w_i^k = P(D_i | X_i^k) = \mathcal{N}(D_i | X_i^k)$$
+
+\item Parameter update for every K,
+
+$$\theta^k \propto P(\theta | X^k_{[to, ti]})$$
+\end{enumerate}
+
+\item Model comparison. This could be done by measure such as AIC, BIC, Bayes Factor etc.
+
+\end{enumerate}
+
+\subsubsection{Particle Generation}
+
+\end{document}

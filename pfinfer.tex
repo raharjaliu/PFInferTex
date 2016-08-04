@@ -63,6 +63,7 @@ $$
 One of the interesting aspects of our is the fact that the i-th simulation result is only dependent on previous simulation, a property known as \textit{Markov property}. We could thus rewrite the update rule as follow,
 
 % TODO correct the second product definition. It seems off
+
 $$
 P(X, \theta | \mathcal{D}) = \frac{\prod_{i=0}^{N} P(\mathcal{D}_i | X_i) \cdot P(X_0) \cdot \prod_{l=1}^{N} P(X_{[t-1, ti]} | X_i, \theta) \cdot \pi(\theta)}{P(\mathcal{D})}
 $$
@@ -115,5 +116,31 @@ $$\theta^k \propto P(\theta | X^k_{[to, ti]})$$
 \end{enumerate}
 
 \subsubsection{Particle Generation}
+
+As mentioned before, A particle $\mathcal{K}$ is defined as a 3-tuple of trajectory $X$, parameter set $\theta$ and assumed model $\mathcal{M}$. For a specific model, j-th particle at i-th time particle is then just a tuple of trajectory and parameter set $k_{ij} = (x_i, \theta_{ij})$.\\
+
+For initial time, a particle could be constructed by combining initial parameters, which were arbitrarily defined by a pre-defined prior, and initial trajectory value $X_0$. There are three ways to define the initial trajectory value. First is to take 0 as initial value. Second is to take the first measurement data $\mathcal{D}_0$. Third is to model initial data as normal distributed instances around $\mathcal{D}_0$, i.e. $X_0 \propto \mathcal{N}(\mathcal{D}_0)$.\\
+
+M particles would then be created and for each iteration of the simulation with each particle having weight which calculated from previous iteration $w_{i - 1}^k$. N particles would then repeatedly chosen off the M particles. The draw is done by first drawing a random $z \propto \mathcal{U}(0, 1)$. A particle $k_{ij}$ is chosen with j denoting the smallest index so that the sum of all weight of particles with index smaller than j is larger than z, i.e.
+
+$$\sum_{l=1}^{j} w_{i - 1}^l \geq z$$
+
+\subsubsection{Simulation Run}
+
+Simulation is done using Gillespie's SSA algorithm. There are possible improvements that we thought might be useful in our project such as $\tau$-leaping and Bayesian Approximation Method.
+
+\subsubsection{Particle Weighting}
+
+Upon the completion of all simulations within one iteration, the quality of each simulation (and in turn, the particle) will be quantified. This quantification is implied in the weighting of the particle at the next iteration $w_{i}^k$. We assume the Gaussian distribution of particle around the measurement time at time $t=i$. Using this assumption, we can quantify our weight in following manner,
+
+$$w_i^k = P(\mathcal{D}_i | x_i^k) = \mathcal{N}(\mathcal{D}_i | x_i^k)$$
+
+To generate particle for next iteration we utilize, however, the normalized particle weight,
+
+$$w_j^k = \frac{w_j^k}{\sum_{l=1}^{M} w_{j}^l}$$
+
+\subsubsection{Gamma Distribution}
+
+\subsubsection{Parameters Update}
 
 \end{document}

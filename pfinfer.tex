@@ -1,5 +1,10 @@
 \documentclass[12pt, oneside]{article}
 
+\usepackage[a4paper, total={6in, 8in}]{geometry}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+
 \begin{document}
 
 \title{Model Inference from Protein Time-Course in Hematopoietic Stem Cells}
@@ -17,6 +22,12 @@ In this paper we developed a particle filtering algorithm to infer the parameter
 
 Our results provided several insights into the dynamics of blood stem cells maturation and specifically in the single ell environment, we managed to gain several valuable insigts on the dynamics of the interaction between two transcription factors on the outcome of cell maturation.
 \end{abstract}
+
+\section{Introduction}
+
+\section{Experimental Setting}
+
+The cells were put in a culture for one week. A video of the cells would then be taken for the whole duration of one week. An automatic detection program tracks down each cell uniquely within the video frame and every 20-30 minutes, protein expression levels of each cell would then be measured. The expressed protein of interests (in our case \texttt{Pu.1} and \texttt{Gata.1}) were hybridized with distinct fluorescence proteins, which would allow for the expression level measurement at each time point.
 
 \section{Models}
 
@@ -171,10 +182,50 @@ $$G_d := \frac{1}{k_d} \sum_{l=0}^{i} a_{li} X_l(S)$$
 
 \subsection{Reaction Models}
 
-%TODO
+We assume following putative cross inhibition between genes \texttt{Pu.1} and \texttt{GATA1} playing roles in cell differentiation dynamics:
 
-\section{Experimental Setting}
+\begin{center}
+\begin{tikzpicture}[node distance=2cm]
 
-The cells were put in a culture for one week. A video of the cells would then be taken for the whole duration of one week. An automatic detection program tracks down each cell uniquely within the video frame and every 20-30 minutes, protein expression levels of each cell would then be measured. The expressed protein of interests (in our case \texttt{Pu.1} and \texttt{Gata.1}) were hybridized with distinct fluorescence proteins, which would allow for the expression level measurement at each time point.
+\node (N0) {\Large $\varnothing$};
+\node [right of = N0] (N1) {\Large $\varnothing$};
+\node [below of = N0] (R0) {\Large \texttt{Pu.1}};
+\node [below of = N1] (R1) {\Large \texttt{GATA1}};
+\node [below of = R0] (N2) {\Large $\varnothing$};
+\node [below of = R1] (N3) {\Large $\varnothing$};
+
+\draw [->,ultra thick,blue] (N0) -- node[left, black] {$k_1$} (R0);
+\draw [->,ultra thick,blue] (N1) -- node[right, black] {$k_2$} (R1);
+\draw [->,ultra thick,blue] (R0) -- node[left, black] {$k_3$} (N2);
+\draw [->,ultra thick,blue] (R1) -- node[right, black] {$k_4$} (N3);
+
+\draw [-|,ultra thick,blue]
+($ (R0) + (3mm,-2.75mm) $)
+-- +(0,-3mm) %node[below, black] {$v_3$}
+-| ($ (R1) - (3mm,3mm) $) ;
+
+\draw [-|,ultra thick,blue]
+($ (R1) + (-3mm,2.75mm) $)
+-- +(0,3mm) %node[above, black] {$v_3$}
+-| ($ (R0) - (-3mm,-3mm) $);
+
+\end{tikzpicture}
+\end{center}
+
+There are four possible reactions happening within our model: $k_1$, $k_2$, $k_3$ and $k_4$. In our simulation, each reaction was assigned propensity value which roughly is proportional to the likelihood of the reaction happening in a given time:
+
+$$P(R_i = k_l) \propto P_l$$
+
+The propensity $P$ of decay reactions $k_3$ and $k_4$ roughly follows the mass action law of chemical reaction:
+
+$$P_l = k_l \cdot A {;} \; l \in [3, 4]$$
+
+For production reactions $k_1$ and $k_2$ we assume Michaeli-Menten inhibition kinetics that influences the production of the species. In this assumption, the inhibiting characteristics of a species on another species negatively influences the creation rate of the species it inhibits. The propensity of the reactions are thus,
+
+$$P_1 = k_1 \cdot \frac{\texttt{GATA1}^{-n}}{\texttt{GATA1}^{-n} + K_{P1}^{-n}}$$
+
+$$P_2 = k_2 \cdot \frac{\texttt{Pu.1}^{-n}}{\texttt{Pu.1}^{-n} + K_{P2}^{-n}}$$
+
+
 
 \end{document}

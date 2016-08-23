@@ -7,7 +7,7 @@
 
 \begin{document}
 
-\title{Model Inference from Protein Time-Course in Hematopoietic Stem Cells}
+\title{Model inference from protein time-course in Hematopoietic Stem Cells (HSC)}
 
 \date{\today}
 
@@ -18,16 +18,18 @@
 \begin{abstract}
 Stochasticity of gene expression becomes apparent when studying the dynamics of single cells rather tan a population of cells. These fluctuations in gene expression in fact reveal more information about the underlying mechanisms of transcription and translation than one could obtain from population averages.
 
-In this paper we developed a particle filtering algorithm to infer the parameters of stochastic models from single cell time series data. In particular, we apply this method to time-lapse microscopy data of two transcription factors (\texttt{Pu.1} and \texttt{Gata.1}) in blood stem cells. These transcription are thought to play a major role in stem cell differentiation.
+In this paper we developed a particle filtering algorithm to infer the parameters of stochastic models from single cell time series data. In particular, we apply this method to time-lapse microscopy data of two transcription factors (\texttt{Pu.1} and \texttt{Gata.1}) in murine blood stem cells. These transcription are thought to play a major role in stem cell differentiation.
 
-Our results provided several insights into the dynamics of blood stem cells maturation and specifically in the single ell environment, we managed to gain several valuable insigts on the dynamics of the interaction between two transcription factors on the outcome of cell maturation.
+Our results provide several insights into the dynamics of blood stem cells maturation and specifically in the single cell environment, we managed to gain several valuable insights on the interaction dynamics between two transcription factors and the outcome of cell maturation.
 \end{abstract}
 
 \section{Introduction}
 
 \section{Experimental Setting}
 
-The cells were put in a culture for one week. A video of the cells would then be taken for the whole duration of one week. An automatic detection program tracks down each cell uniquely within the video frame and every 20-30 minutes, protein expression levels of each cell would then be measured. The expressed protein of interests (in our case \texttt{Pu.1} and \texttt{Gata.1}) were hybridized with distinct fluorescence proteins, which would allow for the expression level measurement at each time point.
+The stem cells were put in a culture for one week. Two videos of the cells, taken under bright-field and ultraviolet microscopy, would then be taken for the whole duration of experiment. An automatic detection program tracks down each cell uniquely within the video frame. The program also tracks down cell division would track the newly created cells likewise. It also detects cell death.\\
+
+Once every 20-30 minutes a  protein expression levels of each cell would then be measured. The expressed protein of interests (in our case \texttt{Pu.1} and \texttt{Gata.1}) were tagged with distinct fluorescence proteins, which would allow for the expression level measurement at each time point.
 
 \section{Models}
 
@@ -41,10 +43,10 @@ $$
 \mathcal{K} := (X, \theta, \mathcal{M})
 $$
 
-Note that a trajectory is different from the experimental data $\mathcal{D}$. A trajectory is the result of the simulation done by applying the parameters onto our model. In functional notation we would assume the i-th value of the trajectory $X_i$ to be a function of the i-th value of the trajectory, the model and the parameters,
+Specifically in our case, trajectory refers to the concentration of measured proteins \texttt{Pu.1} and \texttt{GATA1} while parameter set encompasses all variables that were involved in the reaction such as propensity and its corresponding auxiliary variables (see subsection \textbf{Reaction Models}). Note that a trajectory is different from the experimental data $\mathcal{D}$. A trajectory is the result of the simulation done by applying the parameters onto our model. In functional notation we would assume the i-th value of the trajectory $X_i$ to be a function of the i-th value of the trajectory, the model and the parameters,
 
 $$
-X_i = f(X_{i - 1}, \mathcal{M}, \theta)
+X_i = f(X_{i - 1}, \mathcal{M}, \theta_{i - 1})
 $$
 
 \subsubsection{Posterior}
@@ -88,7 +90,7 @@ $$P := (P_0, P_1, \dots , P_P)$$
 
 \subsubsection{Prior}
 
-Our prior $\pi(\theta)$ could be expanded by assuming the independent of each parameter $\theta_i$ within the parameter set $\theta$,
+Our prior $\pi(\theta)$ could be expanded by assuming the independence of each parameter $\theta_i$ within the parameter set $\theta$,
 
 $$\pi(\theta) = \prod_{i=1}^{P} \pi(\theta_i)$$
 
@@ -130,15 +132,17 @@ $$\theta^k \propto P(\theta | X^k_{[to, ti]})$$
 
 As mentioned before, A particle $\mathcal{K}$ is defined as a 3-tuple of trajectory $X$, parameter set $\theta$ and assumed model $\mathcal{M}$. For a specific model, j-th particle at i-th time particle is then just a tuple of trajectory and parameter set $k_{ij} = (x_i, \theta_{ij})$.\\
 
-For initial time, a particle could be constructed by combining initial parameters, which were arbitrarily defined by a pre-defined prior, and initial trajectory value $X_0$. There are three ways to define the initial trajectory value. First is to take 0 as initial value. Second is to take the first measurement data $\mathcal{D}_0$. Third is to model initial data as normal distributed instances around $\mathcal{D}_0$, i.e. $X_0 \propto \mathcal{N}(\mathcal{D}_0)$.\\
+For initial time, a particle could be constructed by combining initial parameters, which were arbitrarily defined by a pre-defined prior, and initial trajectory value $X_0$. There are three ways to define the initial trajectory value. First is to take 0 as initial value. Second is to take the first measurement data $\mathcal{D}_0$. Third is to model initial data as normal distributed instances around $\mathcal{D}_0$, i.e. $X_0 \propto \mathcal{N}(\mathcal{D}_0)$. It is worth noting that the first strategy may not always be applicable.\\
 
-M particles would then be created and for each iteration of the simulation with each particle having weight which calculated from previous iteration $w_{i - 1}^k$. N particles would then repeatedly chosen off the M particles. The draw is done by first drawing a random $z \propto \mathcal{U}(0, 1)$. A particle $k_{ij}$ is chosen with j denoting the smallest index so that the sum of all weight of particles with index smaller than j is larger than z, i.e.
+M particles would then be created and for each iteration of the simulation with each particle having weight which calculated from previous iteration $w_{i - 1}^k$. In the next iteration, M particles are to be chosen. Note that this implies that a particle from previous iteration could be chosen more than once. Corollarly, a particle from previous iteration may also not be chosen at all. The draw is done by first drawing a random $z \propto \mathcal{U}(0, 1)$. A particle $k_{ij}$ is chosen with j denoting the smallest index so that the sum of all weight of particles with index smaller than j is larger than z, i.e.
 
 $$\sum_{l=1}^{j} w_{i - 1}^l \geq z$$
 
 \subsubsection{Simulation Run}
 
-Simulation is done using Gillespie's SSA algorithm. There are possible improvements that we thought might be useful in our project such as $\tau$-leaping and Bayesian Approximation Method.\\
+Simulation is done using Gillespie's SSA algorithm. There are possible improvements that we thought might be useful in our project such as $\tau$-leaping and Bayesian Approximation Method. Such improvements are generally essential since it would reduce computational cost of the simulation and in turn enable the simulation to scale further to accommodate more leveraged simulation -- in our case we could simulate more cells at the same time in possible more fine-grained time-resolved manner. In our case especially, some kind of improvement would be needed to accommodate the explosion of the number of cells within our culture. Without some kind of approximative method there would be a bottleneck in simulation caused by the exponential increase of the number of living cells that have to be simulated.\\
+
+\textbf{Tau Leaping}
 
 Generally, tau-leaping works by performing all reactions happening for an interval of length tau before updating the parameters and propensity function. By allowing this kind of approximation we potentially allow more efficient simulation and thus increase the capability of the simulation to cope with larger systems. In our case, we use following tau,
 
@@ -150,11 +154,11 @@ with $a_0$ referring to total sum of reaction propensities and $\Gamma$ being un
 
 Upon the completion of all simulations within one iteration, the quality of each simulation (and in turn, the particle) will be quantified. This quantification is implied in the weighting of the particle at the next iteration $w_{i}^k$. We assume the Gaussian distribution of particle around the measurement time at time $t=i$. Using this assumption, we can quantify our weight in following manner,
 
-$$w_i^k = P(\mathcal{D}_i | x_i^k) = \mathcal{N}(\mathcal{D}_i | x_i^k)$$
+$$w_i^k = P(\mathcal{D}_i | X_i^k) = \mathcal{N}(\mathcal{D}_i | X_i^k)$$
 
-To generate particle for next iteration we utilize, however, the normalized particle weight,
+%To generate particle for next iteration we utilize, however, the normalized particle weight,
 
-$$w_j^k = \frac{w_j^k}{\sum_{l=1}^{M} w_{j}^l}$$
+%$$w_j^k = \frac{w_j^k}{\sum_{l=1}^{M} w_{j}^l}$$
 
 \subsubsection{Parameters Update and Gamma Distribution}
 
@@ -164,7 +168,7 @@ $$\Theta^k \propto P(\Theta | X_{[t_0, t_i]})$$
 
 Applying Bayes' Rule on the probability and independent assumption, we get following equation,
 
-$$P(\Theta | X) = \frac{P(X | \Theta)}{P (X)} \prod_{j} P(\Theta_i)$$
+$$P(\Theta | X) = \frac{P(X | \Theta)}{P (X)} \prod_{i} P(\Theta_i)$$
 
 Gamma Distribution is particularly favored for the update since a conjugate prior of Gamma Distribution is in turn Gamma distributed,
 
@@ -176,9 +180,11 @@ $$P(\Theta | X) = \frac{P(X | \Theta)}{P (X)} \prod_{d=1}^{P} Ga(\Theta_d, \alph
 
 $r_d$ here refers to the number of times the d-th reaction was fired during the run and $G_d$ is defined as follows,
 
-$$G_d := \frac{1}{k_d} \sum_{l=0}^{i} a_{li} X_l(S)$$
+$$G_d := \frac{1}{k_d} \sum_{l=0}^{i} a_{l}(X(S))$$
 
-%TODO explain what those symbols refer to
+Here, $k_d$ and $a_{l}(X(S))$ refer to reaction rate of the d-th reaction and trajectory-dependent propensity function, respectively.
+
+%TODO explain what G_d refers to
 
 \subsection{Reaction Models}
 
@@ -214,18 +220,18 @@ We assume following putative cross inhibition between genes \texttt{Pu.1} and \t
 
 There are four possible reactions happening within our model: $k_1$, $k_2$, $k_3$ and $k_4$. In our simulation, each reaction was assigned propensity value which roughly is proportional to the likelihood of the reaction happening in a given time:
 
-$$P(R_i = k_l) \propto P_l$$
+$$P(R_i = k_l) \propto a_l$$
 
-The propensity $P$ of decay reactions $k_3$ and $k_4$ roughly follows the mass action law of chemical reaction:
+The propensity $a$ of decay reactions $k_3$ and $k_4$ roughly follows the mass action law of chemical reaction:
 
-$$P_l = k_l \cdot A {;} \; l \in [3, 4]$$
+$$a_l = k_l \cdot A {;} \; l \in [3, 4]$$
 
-For production reactions $k_1$ and $k_2$ we assume Michaeli-Menten inhibition kinetics that influences the production of the species. In this assumption, the inhibiting characteristics of a species on another species negatively influences the creation rate of the species it inhibits. The propensity of the reactions are thus,
+For production reactions $k_1$ and $k_2$ we assume Michaelis-Menten inhibition kinetics that influences the production of the species. In this assumption, the inhibiting characteristics of a species on another species negatively influences the creation rate of the species it inhibits. The propensity of the reactions are thus,
 
-$$P_1 = k_1 \cdot \frac{\texttt{GATA1}^{-n}}{\texttt{GATA1}^{-n} + K_{P1}^{-n}}$$
+$$a_1 = k_1 \cdot \frac{\texttt{GATA1}^{-n}}{\texttt{GATA1}^{-n} + K_{P1}^{-n}}$$
 
-$$P_2 = k_2 \cdot \frac{\texttt{Pu.1}^{-n}}{\texttt{Pu.1}^{-n} + K_{P2}^{-n}}$$
+$$a_2 = k_2 \cdot \frac{\texttt{Pu.1}^{-n}}{\texttt{Pu.1}^{-n} + K_{P2}^{-n}}$$
 
-\section{Bla}
+\section{BlaBla}
 
 \end{document}

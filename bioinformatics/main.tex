@@ -36,9 +36,15 @@ online.}
 
 \section{Introduction}
 
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quam sapien, gravida quis blandit eget, euismod sit amet ante. Ut sapien sem, tincidunt ut sollicitudin ut, fermentum eu sapien. Quisque interdum aliquet ante non luctus. Donec ex purus, vehicula et pellentesque eu, tempus in tellus. Nullam euismod nisl vitae enim dignissim finibus. Maecenas laoreet risus in placerat auctor. Phasellus id magna vitae metus placerat porttitor at a nibh. Aliquam sit amet tortor ut lorem feugiat gravida. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nulla venenatis erat id dolor pretium, ac lacinia odio elementum. Nunc non imperdiet tortor.
+
+\section{Approach}
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quam sapien, gravida quis blandit eget, euismod sit amet ante. Ut sapien sem, tincidunt ut sollicitudin ut, fermentum eu sapien. Quisque interdum aliquet ante non luctus. Donec ex purus, vehicula et pellentesque eu, tempus in tellus. Nullam euismod nisl vitae enim dignissim finibus. Maecenas laoreet risus in placerat auctor. Phasellus id magna vitae metus placerat porttitor at a nibh. Aliquam sit amet tortor ut lorem feugiat gravida. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nulla venenatis erat id dolor pretium, ac lacinia odio elementum. Nunc non imperdiet tortor.
+
 \subsection{Experimental Setting}
 
-The stem cells were put in a culture for one week. Two videos of the cells, taken under bright-field and ultraviolet microscopy, would then be taken for the whole duration of experiment. An automatic detection program tracks down each cell uniquely within the video frame. The program also tracks down cell division would track the newly created cells likewise. It also detects cell death.\\
+The stem cells were put in a culture for one week. Two videos of the cells, taken under bright-field and ultraviolet microscopy, would then be taken for the whole duration of experiment. An automatic detection program tracks down each cell uniquely within the video frame. The program also tracks down cell division would track the newly created cells likewise. It also detects cell death.
 
 Once every 20-30 minutes a  protein expression levels of each cell would then be measured. The expressed protein of interests (in our case \texttt{Pu.1} and \texttt{Gata.1}) were tagged with distinct fluorescence proteins, which would allow for the expression level measurement at each time point.
 
@@ -50,64 +56,71 @@ Once every 20-30 minutes a  protein expression levels of each cell would then be
 
 We use particle filtering in our simulation. Particle filtering is a family of methods that use utilize the concept of \textit{particle}. A particle $\mathcal{K}$ is defined as a triple of trajectory $X$, parameter set $\theta$ and assumed model $\mathcal{M}$,
 
-$$
-\mathcal{K} := (X, \theta, \mathcal{M})
-$$
+\begin{equation}
+\mathcal{K} := (X, \theta, \mathcal{M})\label{eq:01}
+\end{equation}
 
 Specifically in our case, trajectory refers to the concentration of measured proteins \texttt{Pu.1} and \texttt{GATA1} while parameter set encompasses all variables that were involved in the reaction such as propensity and its corresponding auxiliary variables (see subsection \textbf{Reaction Models}). Note that a trajectory is different from the experimental data $\mathcal{D}$. A trajectory is the result of the simulation done by applying the parameters onto our model. In functional notation we would assume the i-th value of the trajectory $X_i$ to be a function of the i-th value of the trajectory, the model and the parameters,
 
-$$
-X_i = f(X_{i - 1}, \mathcal{M}, \theta_{i - 1})
-$$
+\begin{equation}
+X_i = f(X_{i - 1}, \mathcal{M}, \theta_{i - 1})\label{eq:02}
+\end{equation}
 
 \subsubsection{Posterior}
 
 Our posterior describes the probability of having the trajectory $X$ and parameter $\theta$ given the observation $\mathcal{D}$,
 
-$$
-P(X, \theta | \mathcal{D})
-$$
+\begin{equation}
+P(X, \theta | \mathcal{D})\label{eq:03}
+\end{equation}
 
 We could understand this as the probability of having our simulation return a given set of values \textit{and} having the parameter set $\theta$ given that we previously observed the experimental data $\mathcal{D}$. Using Bayes' Theorem we could further expand our posterior into an update rule,
 
-$$
-P(X, \theta | \mathcal{D}) = \frac{P(\mathcal{D} | X, \theta)  P(X, \theta)}{P(\mathcal{D})}
-$$
+\begin{equation}
+P(X, \theta | \mathcal{D}) = \frac{P(\mathcal{D} | X, \theta)  P(X, \theta)}{P(\mathcal{D})}\label{eq:04}
+\end{equation}
 
 In our simulation we know that, to compute prior $P(\mathcal{D} | X, \theta)$, only knowledge about the trajectory of the simulation is needed. Hence, we could simplify our prior,
 
-$$P(\mathcal{D} | X, \theta) = P(\mathcal{D} | X)$$
+\begin{equation}
+P(\mathcal{D} | X, \theta) = P(\mathcal{D} | X)\label{eq:05}
+\end{equation}
 
 Not that the above equation inherently assumes that $\mathcal{D}$ is only directly dependent on $X$ and $X$ is in turn only directly dependent on $\theta$. Incorporating this onto our update rule, and expanding the definition of $P(X, \theta)$ using chain rule, we get
 
-$$
-P(X, \theta | \mathcal{D}) = \frac{P(\mathcal{D} | X)  P(X | \theta) \pi(\theta)}{P(\mathcal{D})}
-$$
+\begin{equation}
+P(X, \theta | \mathcal{D}) = \frac{P(\mathcal{D} | X)  P(X | \theta) \pi(\theta)}{P(\mathcal{D})}\label{eq:06}
+\end{equation}
 
 One of the interesting aspects of our is the fact that the i-th simulation result is only dependent on previous simulation, a property known as \textit{Markov property}. We could thus rewrite the update rule as follow,
 
 % TODO correct the second product definition. It seems off
 
-$$
-P(X, \theta | \mathcal{D}) = \frac{\prod_{i=0}^{N} P(\mathcal{D}_i | X_i) \cdot P(X_0) \cdot \prod_{l=1}^{N} P(X_{[t-1, ti]} | X_i, \theta) \cdot \pi(\theta)}{P(\mathcal{D})}
-$$
+\begin{equation}
+P(X, \theta | \mathcal{D}) = \frac{\prod_{i=0}^{N} P(\mathcal{D}_i | X_i) P(X_0) \prod_{l=1}^{N} P(X_{[t-1, ti]} | X_i, \theta)\pi(\theta)}{P(\mathcal{D})}\label{eq:07}
+\end{equation}
 
 \subsubsection{Parameters}
 
 During the simulation we assumes certain parameters that would influence the trajectory of the simulation. The parameter set $\theta$ could then mathematically be understood as P-tuple containing all the parameters that are assumed in the simulation,
 
-$$P := (P_0, P_1, \dots , P_P)$$
-
+\begin{equation}
+P := (P_0, P_1, \dots , P_P)\label{eq:08}
+\end{equation}
 
 \subsubsection{Prior}
 
 Our prior $\pi(\theta)$ could be expanded by assuming the independence of each parameter $\theta_i$ within the parameter set $\theta$,
 
-$$\pi(\theta) = \prod_{i=1}^{P} \pi(\theta_i)$$
+\begin{equation}
+\pi(\theta) = \prod_{i=1}^{P} \pi(\theta_i)\label{eq:09}
+\end{equation}
 
 Specifically for this simulation, we assume our prior to be Gamma distributed with the parameters $\alpha$ and $\beta$,
 
-$$\pi(\theta) = \prod_{i=1}^{P} Ga(\theta_i, \alpha_i, \beta_i)$$
+\begin{equation}
+\pi(\theta) = \prod_{i=1}^{P} Ga(\theta_i, \alpha_i, \beta_i)\label{eq:10}
+\end{equation}
 
 We used Gamma distribution as our prior due to the fact that a conjugate prior of a Gamma distributed random variable is also Gamma distributed.
 
@@ -123,16 +136,23 @@ The simulation is run in roughly following high level steps:
 \begin{enumerate}
 \item Generation of initial particles for step i
 
-$$Ki := (K_{i1}, K_{i2}, \dots, K_{im})$$
+\begin{equation}
+Ki := (K_{i1}, K_{i2}, \dots, K_{im})\label{eq:11}
+\end{equation}
 
 \item Simulation run of each particle $K_{ij}$
 \item Weighting of each particle. The weight is a function of probability of observing the data given the simulation result.
 
-$$w_i^k = P(D_i | X_i^k) = \mathcal{N}(D_i | X_i^k)$$
+\begin{equation}
+w_i^k = P(D_i | X_i^k) = \mathcal{N}(D_i | X_i^k)\label{eq:12}
+\end{equation}
 
 \item Parameter update for every K,
 
-$$\theta^k \propto P(\theta | X^k_{[to, ti]})$$
+\begin{equation}
+\theta^k \propto P(\theta | X^k_{[to, ti]})\label{eq:13}
+\end{equation}
+
 \end{enumerate}
 
 \item Model comparison. This could be done by measure such as AIC, BIC, Bayes Factor etc.
@@ -141,13 +161,15 @@ $$\theta^k \propto P(\theta | X^k_{[to, ti]})$$
 
 \subsubsection{Particle Generation}
 
-As mentioned before, A particle $\mathcal{K}$ is defined as a 3-tuple of trajectory $X$, parameter set $\theta$ and assumed model $\mathcal{M}$. For a specific model, j-th particle at i-th time particle is then just a tuple of trajectory and parameter set $k_{ij} = (x_i, \theta_{ij})$.\\
+As mentioned before, A particle $\mathcal{K}$ is defined as a 3-tuple of trajectory $X$, parameter set $\theta$ and assumed model $\mathcal{M}$. For a specific model, j-th particle at i-th time particle is then just a tuple of trajectory and parameter set $k_{ij} = (x_i, \theta_{ij})$.
 
-For initial time, a particle could be constructed by combining initial parameters, which were arbitrarily defined by a pre-defined prior, and initial trajectory value $X_0$. There are three ways to define the initial trajectory value. First is to take 0 as initial value. Second is to take the first measurement data $\mathcal{D}_0$. Third is to model initial data as normal distributed instances around $\mathcal{D}_0$, i.e. $X_0 \propto \mathcal{N}(\mathcal{D}_0)$. It is worth noting that the first strategy may not always be applicable.\\
+For initial time, a particle could be constructed by combining initial parameters, which were arbitrarily defined by a pre-defined prior, and initial trajectory value $X_0$. There are three ways to define the initial trajectory value. First is to take 0 as initial value. Second is to take the first measurement data $\mathcal{D}_0$. Third is to model initial data as normal distributed instances around $\mathcal{D}_0$, i.e. $X_0 \propto \mathcal{N}(\mathcal{D}_0)$. It is worth noting that the first strategy may not always be applicable.
 
 M particles would then be created and for each iteration of the simulation with each particle having weight which calculated from previous iteration $w_{i - 1}^k$. In the next iteration, M particles are to be chosen. Note that this implies that a particle from previous iteration could be chosen more than once. Corollarly, a particle from previous iteration may also not be chosen at all. The draw is done by first drawing a random $z \propto \mathcal{U}(0, 1)$. A particle $k_{ij}$ is chosen with j denoting the smallest index so that the sum of all weight of particles with index smaller than j is larger than z, i.e.
 
-$$\sum_{l=1}^{j} w_{i - 1}^l \geq z$$
+\begin{equation}
+\sum_{l=1}^{j} w_{i - 1}^l \geq z\label{eq:14}
+\end{equation}
 
 \subsubsection{Simulation Run}
 
@@ -157,7 +179,9 @@ Simulation is done using Gillespie's SSA algorithm. There are possible improveme
 
 Generally, tau-leaping works by performing all reactions happening for an interval of length tau before updating the parameters and propensity function. By allowing this kind of approximation we potentially allow more efficient simulation and thus increase the capability of the simulation to cope with larger systems. In our case, we use following tau,
 
-$$\tau = \frac{1}{a_0} ln \Gamma$$
+\begin{equation}
+\tau = \frac{1}{a_0} ln \Gamma\label{eq:15}
+\end{equation}
 
 with $a_0$ referring to total sum of reaction propensities and $\Gamma$ being uniformly distributed between 0 and 1. 
 
@@ -165,7 +189,9 @@ with $a_0$ referring to total sum of reaction propensities and $\Gamma$ being un
 
 Upon the completion of all simulations within one iteration, the quality of each simulation (and in turn, the particle) will be quantified. This quantification is implied in the weighting of the particle at the next iteration $w_{i}^k$. We assume the Gaussian distribution of particle around the measurement time at time $t=i$. Using this assumption, we can quantify our weight in following manner,
 
-$$w_i^k = P(\mathcal{D}_i | X_i^k) = \mathcal{N}(\mathcal{D}_i | X_i^k)$$
+\begin{equation}
+w_i^k = P(\mathcal{D}_i | X_i^k) = \mathcal{N}(\mathcal{D}_i | X_i^k)\label{eq:16}
+\end{equation}
 
 %To generate particle for next iteration we utilize, however, the normalized particle weight,
 
@@ -175,23 +201,33 @@ $$w_i^k = P(\mathcal{D}_i | X_i^k) = \mathcal{N}(\mathcal{D}_i | X_i^k)$$
 
 After each run, the parameters would then be updated using Gamma Distribution. For $k$-th particle, the updated parameters at time $i$ are dependent on previous parameters given the trajectory of data in $[t_0, t_i]$,\\
 
-$$\Theta^k \propto P(\Theta | X_{[t_0, t_i]})$$
+\begin{equation}
+\Theta^k \propto P(\Theta | X_{[t_0, t_i]})\label{eq:17}
+\end{equation}
 
 Applying Bayes' Rule on the probability and independent assumption, we get following equation,
 
-$$P(\Theta | X) = \frac{P(X | \Theta)}{P (X)} \prod_{i} P(\Theta_i)$$
+\begin{equation}
+P(\Theta | X) = \frac{P(X | \Theta)}{P (X)} \prod_{i} P(\Theta_i)\label{eq:18}
+\end{equation}
 
 Gamma Distribution is particularly favored for the update since a conjugate prior of Gamma Distribution is in turn Gamma distributed,
 
-$$P(\Theta | X) = \frac{P(X | \Theta)}{P (X)} \prod_{d=1}^{P} Ga(\Theta_d, \alpha_d, \beta_d)$$
+\begin{equation}
+P(\Theta | X) = \frac{P(X | \Theta)}{P (X)} \prod_{d=1}^{P} Ga(\Theta_d, \alpha_d, \beta_d)\label{eq:19}
+\end{equation}
 
 With $\alpha$ and $\beta$ referring to both the slope and skewness of the distribution respectively. Owing to the fact that conjugate prior of Gamma Distribution is also Gamma distributed, this could be then further simplified as an update rule of the Gamma distribution,
 
-$$P(\Theta | X) = \frac{P(X | \Theta)}{P (X)} \prod_{d=1}^{P} Ga(\Theta_d, \alpha_d + r_d, \beta_d + Gd)$$
+\begin{equation}
+P(\Theta | X) = \frac{P(X | \Theta)}{P (X)} \prod_{d=1}^{P} Ga(\Theta_d, \alpha_d + r_d, \beta_d + Gd)\label{eq:20}
+\end{equation}
 
 $r_d$ here refers to the number of times the d-th reaction was fired during the run and $G_d$ is defined as follows,
 
-$$G_d := \frac{1}{k_d} \sum_{l=0}^{i} a_{l}(X(S))$$
+\begin{equation}
+G_d := \frac{1}{k_d} \sum_{l=0}^{i} a_{l}(X(S))\label{eq:21}
+\end{equation}
 
 Here, $k_d$ and $a_{l}(X(S))$ refer to reaction rate of the d-th reaction and trajectory-dependent propensity function, respectively.
 
@@ -229,369 +265,37 @@ We assume following putative cross inhibition between genes \texttt{Pu.1} and \t
 
 There are four possible reactions happening within our model: $k_1$, $k_2$, $k_3$ and $k_4$. In our simulation, each reaction was assigned propensity value which roughly is proportional to the likelihood of the reaction happening in a given time:
 
-$$P(R_i = k_l) \propto a_l$$
+\begin{equation}
+P(R_i = k_l) \propto a_l\label{eq:22}
+\end{equation}
 
 The propensity $a$ of decay reactions $k_3$ and $k_4$ roughly follows the mass action law of chemical reaction:
 
-$$a_l = k_l \cdot A {;} \; l \in [3, 4]$$
+\begin{equation}
+a_l = k_l \cdot A {;} \; l \in [3, 4]\label{eq:23}
+\end{equation}
 
 For production reactions $k_1$ and $k_2$ we assume Michaelis-Menten inhibition kinetics that influences the production of the species. In this assumption, the inhibiting characteristics of a species on another species negatively influences the creation rate of the species it inhibits. The propensity of the reactions are thus,
 
-$$a_1 = k_1 \cdot \frac{\texttt{GATA1}^{-n}}{\texttt{GATA1}^{-n} + K_{P1}^{-n}}$$
-
-$$a_2 = k_2 \cdot \frac{\texttt{Pu.1}^{-n}}{\texttt{Pu.1}^{-n} + K_{P2}^{-n}}$$
-
-\section{DEFAULT PART}
-
-\section{Introduction}
-
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text. Figure~\ref{fig:01}
-shows that the above method  Text Text Text Text  Text Text Text
-Text Text Text  Text Text.  \citep{Bag01} wants to know about
-{\ldots}{\ldots} text follows.
 \begin{equation}
-\sum \text{\it x}+ \text{\it y} =\text{\it Z}\label{eq:01}\vspace*{-10pt}
+a_1 = k_1 \cdot \frac{\texttt{GATA1}^{-n}}{\texttt{GATA1}^{-n} + K_{P1}^{-n}}\label{eq:23}
 \end{equation}
 
-%\enlargethispage{12pt}
+\begin{equation}
+a_2 = k_2 \cdot \frac{\texttt{Pu.1}^{-n}}{\texttt{Pu.1}^{-n} + K_{P2}^{-n}}\label{eq:23}
+\end{equation}
 
-\section{Approach}
+\section{Discussion}
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quam sapien, gravida quis blandit eget, euismod sit amet ante. Ut sapien sem, tincidunt ut sollicitudin ut, fermentum eu sapien. Quisque interdum aliquet ante non luctus. Donec ex purus, vehicula et pellentesque eu, tempus in tellus. Nullam euismod nisl vitae enim dignissim finibus. Maecenas laoreet risus in placerat auctor. Phasellus id magna vitae metus placerat porttitor at a nibh. Aliquam sit amet tortor ut lorem feugiat gravida. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nulla venenatis erat id dolor pretium, ac lacinia odio elementum. Nunc non imperdiet tortor.
+
+\section{Conclusion}
 
 Equation~(\ref{eq:01}) Text Text Text Text Text Text  Text Text
 Text Text Text Text Text Text Text Text Text Text Text Text Text.
 Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
 Text Text Text  Text Text Text Text Text Text  Text Text.
 \citealp{Boffelli03} might want to know about text text text text
-.....
-
-
-\begin{methods}
-\section{Methods}
-
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about text text text text
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about text text text
-text\vspace*{1pt}
-
-\begin{itemize}
-\item for bulleted list, use itemize
-\item for bulleted list, use itemize
-\item for bulleted list, use itemize\vspace*{1pt}
-\end{itemize}
-
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text Text Text Text Text Text Text Text
-Text Text Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about text text text text
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about text text text text
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method Text
-Text Text Text Text Text Text Text Text Text Text Text.
-\citealp{Boffelli03} might want to know about text text text text
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text Text Text Text Text Text Text.
-
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text\vadjust{\newpage}.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about text text text text
-Text Text Text Text Text Text Text Text Text Text Text Text Text
-Text Text Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about text text text text
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about text text text text
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method Text
-Text Text Text Text Text Text Text Text Text Text Text.
-\citealp{Boffelli03} might want to know about text text text text
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text Text Text Text Text Text Text.
-
-
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-
-
-
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-
-\subsection{This is subheading}
-
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text
-text. Text Text Text Text Text Text  Text Text Text Text Text Text
-Text Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-
-
-\subsubsection{This is subsubheading}
-
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-
-
-
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text\break
-text text
-
-
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text
-textText Text Text Text Text Text  Text Text Text Text Text Text
-Text Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-
-\enlargethispage{6pt}
-
-
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-
-
-
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-
-
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-
-
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-
-\begin{table}[!t]
-\processtable{This is table caption\label{Tab:01}} {\begin{tabular}{@{}llll@{}}\toprule head1 &
-head2 & head3 & head4\\\midrule
-row1 & row1 & row1 & row1\\
-row2 & row2 & row2 & row2\\
-row3 & row3 & row3 & row3\\
-row4 & row4 & row4 & row4\\\botrule
-\end{tabular}}{This is a footnote}
-\end{table}
-
-\end{methods}
 
 \begin{figure}[!tpb]%figure1
 \fboxsep=0pt\colorbox{gray}{\begin{minipage}[t]{235pt} \vbox to 100pt{\vfill\hbox to
@@ -605,134 +309,6 @@ row4 & row4 & row4 & row4\\\botrule
 %%\centerline{\includegraphics{fig02.eps}}
 %\caption{Caption, caption.}\label{fig:02}
 %\end{figure}
-
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-
-
-\subsection{Test1}
-
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-
-
-
-
-
-\section{Discussion}
-
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text Text Text Text Text.
-
-
-
-
-Table~\ref{Tab:01} shows that Text Text Text Text Text  Text Text
-Text Text Text Text. Figure~2\vphantom{\ref{fig:02}} shows that
-the above method Text Text. Text Text Text  Text Text Text Text
-Text Text. Figure~2\vphantom{\ref{fig:02}} shows that the above
-method Text Text. Text Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method Text
-Text.
-
-
-
-
-
-
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-%     please remove the " % " symbol from \centerline{\includegraphics{fig01.eps}}
-%     as it may ignore the figures.
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-
-
-\section{Conclusion}
-
-(Table~\ref{Tab:01}) Text Text Text Text Text Text  Text Text Text
-Text Text Text Text Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-Text Text Text Text Text Text Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-
-
-
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about  text text text text
-
-\begin{enumerate}
-\item this is item, use enumerate
-\item this is item, use enumerate
-\item this is item, use enumerate
-\end{enumerate}
-
-Text Text Text Text Text Text Text Text Text Text Text Text Text
-Text Text Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows\vadjust{\pagebreak} that the
-above method  Text Text Text Text Text Text Text Text Text Text
-Text Text.  \citealp{Boffelli03} might want to know about text
-text text text Text Text Text Text Text Text  Text Text Text Text
-Text Text Text Text Text Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about text text text text
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text Text Text Text Text Text\break Text.
 
 
 Text Text Text Text Text Text  Text Text Text Text Text Text Text
@@ -763,36 +339,23 @@ This work has been supported by the... Text Text  Text Text.\vspace*{-12pt}
 
 \begin{thebibliography}{}
 
-\bibitem[Bofelli {\it et~al}., 2000]{Boffelli03}
-Bofelli,F., Name2, Name3 (2003) Article title, {\it Journal Name}, {\bf 199}, 133-154.
+\bibitem[Feigelman., 2016]{Feigelman11}
+Feigelman, Justin. (2011). "Stochastic and deterministic methods for the analysis of Nanog dynamics in mouse embryonic stem cells." PhD Thesis, Technische Universit\"at M\"unchen, Munich, Germany.\vspace*{-2pt}
 
-\bibitem[Bag {\it et~al}., 2001]{Bag01}
-Bag,M., Name2, Name3 (2001) Article title, {\it Journal Name}, {\bf 99}, 33-54.
+\bibitem[Gillespie, 2007]{Gillespie07}
+Gillespie, D. T. (2007). Stochastic simulation of chemical kinetics. \textit{Annu. Rev. Phys. Chem.}, \textbf{58}, 35-55.
 
-\bibitem[Yoo \textit{et~al}., 2003]{Yoo03}
-Yoo,M.S. \textit{et~al}. (2003) Oxidative stress regulated genes
-in nigral dopaminergic neurnol cell: correlation with the known
-pathology in Parkinson's disease. \textit{Brain Res. Mol. Brain
-Res.}, \textbf{110}(Suppl. 1), 76--84.
+\bibitem[Fahrmeir {\it et~al}., 2007]{Fahrmeir07}
+Fahrmeir, L., K\"unstler, R., Pigeot, I., \& Tutz, G. (2007). \textit{Statistik: Der Weg zur Datenanalyse}. Springer-Verlag.
 
-\bibitem[Lehmann, 1986]{Leh86}
-Lehmann,E.L. (1986) Chapter title. \textit{Book Title}. Vol.~1, 2nd edn. Springer-Verlag, New York.
+\bibitem[Zechner {\it et~al}., 2011]{Zechner11}
+Zechner, C., Pelet, S., Peter, M., \& Koeppl, H. (2011, December). Recursive Bayesian estimation of stochastic rate constants from heterogeneous cell populations. In \textit{2011 50th IEEE Conference on Decision and Control and European Control Conference} (pp. 5837-5843). IEEE.
 
-\bibitem[Crenshaw and Jones, 2003]{Cre03}
-Crenshaw, B.,III, and Jones, W.B.,Jr (2003) The future of clinical
-cancer management: one tumor, one chip. \textit{Bioinformatics},
-doi:10.1093/bioinformatics/btn000.
+\bibitem[Haseltine {\it et~al}., 2005]{Haseltine05}
+Haseltine, E. L., \& Rawlings, J. B. (2005). On the origins of approximations for stochastic chemical kinetics. \textit{The Journal of chemical physics}, \textbf{123(16)}, 164115.
 
-\bibitem[Auhtor \textit{et~al}. (2000)]{Aut00}
-Auhtor,A.B. \textit{et~al}. (2000) Chapter title. In Smith, A.C.
-(ed.), \textit{Book Title}, 2nd edn. Publisher, Location, Vol. 1, pp.
-???--???.
-
-\bibitem[Bardet, 1920]{Bar20}
-Bardet, G. (1920) Sur un syndrome d'obesite infantile avec
-polydactylie et retinite pigmentaire (contribution a l'etude des
-formes cliniques de l'obesite hypophysaire). PhD Thesis, name of
-institution, Paris, France.
+\bibitem[Sherlock {\it et~al}., 2014]{Sherlock14}
+Sherlock, C., Golightly, A., \& Gillespie, C. S. (2014). Bayesian inference for hybrid discrete-continuous stochastic kinetic models. \textit{Inverse Problems}, \textbf{30(11)}, 114005.
 
 \end{thebibliography}
 \end{document}

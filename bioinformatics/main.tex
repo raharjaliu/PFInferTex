@@ -278,12 +278,39 @@ a_l = k_l \cdot A {;} \; l \in [3, 4]\label{eq:23}
 For production reactions $k_1$ and $k_2$ we assume Michaelis-Menten inhibition kinetics that influences the production of the species. In this assumption, the inhibiting characteristics of a species on another species negatively influences the creation rate of the species it inhibits. The propensity of the reactions are thus,
 
 \begin{equation}
-a_1 = k_1 \cdot \frac{\texttt{GATA1}^{-n}}{\texttt{GATA1}^{-n} + K_{P1}^{-n}}\label{eq:23}
+a_1 = k_1 \cdot \frac{\texttt{GATA1}^{-n}}{\texttt{GATA1}^{-n} + K_{P1}^{-n}}\label{eq:24}
 \end{equation}
 
 \begin{equation}
-a_2 = k_2 \cdot \frac{\texttt{Pu.1}^{-n}}{\texttt{Pu.1}^{-n} + K_{P2}^{-n}}\label{eq:23}
+a_2 = k_2 \cdot \frac{\texttt{Pu.1}^{-n}}{\texttt{Pu.1}^{-n} + K_{P2}^{-n}}\label{eq:25}
 \end{equation}
+
+\subsection{Models Comparison}
+
+Our framework enables us to test not only standard hematopoietic stem cell maturation as described above, it also allows us to compare it with other models. One method that could be used to compare models is Bayes Factors. It is done by performing ratio of the posterior probabilities of two models $M_1$ and $M_2$,
+
+\begin{equation}
+B_{M1, M2} = \frac{P(M_1 | \mathcal{D})}{P(M_2 | \mathcal{D})}\label{eq:26}
+\end{equation}
+
+Using Bayes' Theorem, we can formulate the marginal probability as,
+
+\begin{equation}
+P(M | \mathcal{D}) = \frac{P(\mathcal{D} | M) P(M)}{P(\mathcal{D})}\label{eq:27}
+\end{equation}
+
+The marginal likelihood of model $P(\mathcal{D} | M)$ could be approximated using the particles at each iteration i (\citealp{Wilkinson11}). Since the observation of particles only depends on the previous particle, We could therefore rewrite the term as,
+
+\begin{equation}
+P(\mathcal{D} | M) = P(\mathcal{D_0}) \prod_{l=1}^{N} P(\mathcal{D}_{i+1} | \mathcal{D}_{0:i}, M)\label{eq:28}
+\end{equation}
+
+Assuming a priori equally likely models, the factor of $P(M)$ in (\ref{eq:26}) cancels between the two models and the Bayes Factors now becomes the ratio of two marginal likelihood,
+
+\begin{equation}
+B_{M1, M2} = \frac{P(\mathcal{D} | M_1)}{P(\mathcal{D} | M_2)}\label{eq:29}
+\end{equation}
+
 
 \section{Discussion}
 
@@ -356,6 +383,9 @@ Gillespie, D. T. (2007). Stochastic simulation of chemical kinetics. \textit{Ann
 
 \bibitem[Fahrmeir {\it et~al}., 2007]{Fahrmeir07}
 Fahrmeir, L., K\"unstler, R., Pigeot, I., \& Tutz, G. (2007). \textit{Statistik: Der Weg zur Datenanalyse}. Springer-Verlag.
+
+\bibitem[Wilkinson, 2011]{Wilkinson11}
+Wilkinson, D. J. (2011). Stochastic modelling for systems biology. CRC press.
 
 \bibitem[Zechner {\it et~al}., 2011]{Zechner11}
 Zechner, C., Pelet, S., Peter, M., \& Koeppl, H. (2011, December). Recursive Bayesian estimation of stochastic rate constants from heterogeneous cell populations. In \textit{2011 50th IEEE Conference on Decision and Control and European Control Conference} (pp. 5837-5843). IEEE.

@@ -42,7 +42,7 @@ In this paper we focus on the maturation lines of hematopoietic stem cells (\cit
 
 \begin{figure}[h]
 \includegraphics[width=8cm]{figures/homatopoietic_focus}
-\caption{Maturation cascade of intermediate Common Myeloid Progenitor (CMP) to Megakaryocyte-Eerythroid Progenitor (MEP) and Granulocyte/Macrophage Progenitor (GMP). MEP would then maturate into somatic Red Blood Cells and Megakaryocites while GMP would undergo maturation into Granulocytes and Monocyptes. For each process there are known factors which are known to interact antagonistically on maturation decision. Our CMP to MEP and GMP decision stands on the top of the figure with two transcription factors of interest, \texttt{Pu.1} and \texttt{Gata.1} interact atagonistically.}\label{fig:01}
+\caption{Maturation cascade of intermediate Common Myeloid Progenitor (CMP) to Megakaryocyte-Eerythroid Progenitor (MEP) and Granulocyte/Macrophage Progenitor (GMP). MEP would then maturate into somatic Red Blood Cells and Megakaryocites while GMP would undergo maturation into Granulocytes and Monocyptes. For each process there are known factors which are known to interact antagonistically on maturation decision. Our CMP to MEP and GMP decision stands on the top of the figure with two transcription factors of interest, \texttt{Pu.1} and \texttt{Gata.1} interact atagonistically. Figure taken from (\citealp{Graf09}).}\label{fig:01}
 \end{figure}
 
 The decision process of CMP transitioning into either MEP and GMP stands in focus of our project. Two transcription factors, \texttt{Pu.1}and \texttt{Gata.1} are thought to influence the decision process (\citealp{Graf09}). Moreover, both transcription factors are known to inhibit each other. It is thought that the whole cross inhibition dynamics between the two has an impact on the fate of Common Myeloid Progentir. We assume this interaction to have "tipping a balance impact" on the fate of the cells, in which a dominating effect of one transcription factor would have a decisive role on the transition.
@@ -58,6 +58,13 @@ For the single cell dynamic analysis to be possible, we were interested in gaini
 The stem cells were put in a culture for one week. Two videos of the cells, taken under bright-field and ultraviolet microscopy, would then be taken for the whole duration of experiment. An automatic detection program tracks down each cell uniquely within the video frame. The program also tracks down cell division would track the newly created cells likewise. It also detects cell death.
 
 Once every 20-30 minutes a  protein expression levels of each cell would then be measured. The expressed protein of interests (in our case \texttt{Pu.1} and \texttt{Gata.1}) were tagged with distinct fluorescence proteins, which would allow for the expression level measurement at each time point.
+
+Figure \ref{fig:02} shows how the dataset from similarly conducted experiment taken from (\citealp{Feigelman16}) visually look like.
+
+\begin{figure}[h]
+\includegraphics[width=8cm]{figures/cell-generations.png}
+\caption{Example of single cell expression data. In this example, initially only one cell is observed under the bright-field and ultraviolet recording. The cell would then divide into two other cells. The system automatically recognizes this and separate measurements of expression would then be conducted, which is visible in the lower part of the figure. The above example also makes point of the uniqueness and tracability of each cell by pointing two specific lineages within the data: the blue and red lineages. The system records complete expression measurement of the lineages which could be seen in second half of the figure corresponding with the first half of the figure. The system is capable of recording not only cell division but also cell deaths, as can be seen through the x's sign in the upper part of the figure. Figure taken from (\citealp{Feigelman16)}}\label{fig:02}
+\end{figure}
 
 \section{Models}
 
@@ -379,7 +386,7 @@ This work has been supported by the... Text Text  Text Text.\vspace*{-12pt}
 
 \begin{thebibliography}{}
 
-\bibitem[Feigelman., 2016]{Feigelman11}
+\bibitem[Feigelman., 2016]{Feigelman16}
 Feigelman, J. (2011). "Stochastic and deterministic methods for the analysis of Nanog dynamics in mouse embryonic stem cells." PhD Thesis, Technische Universit\"at M\"unchen, Munich, Germany.\vspace*{-2pt}
 
 \bibitem[Graf \& Enver, 2009]{Graf09}

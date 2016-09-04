@@ -36,17 +36,22 @@ online.}
 
 \section{Introduction}
 
-The advances in gene expression measurement techniques, coupled with equally rapid advances in single cell analytics, have allowed the more recent single cell analysis of cell dynamics. This has enabled us to look deeper into the dynamics of stem cell maturation. In recent years, we have discovered several genes that potentially are involved in the decision making mechanism of cell maturation going from Inner Mass Cell (IMC) all the way to somatic cells.
+The advances in gene expression measurement techniques, coupled with equally rapid advances in single cell analytics, have allowed the more recent single cell analysis of cell dynamics. This has enabled us to look deeper into the dynamics of stem cell maturation. In recent years, we have discovered several genes that potentially are involved in the decision making mechanism of cell maturation going from Inner Mass Cell (IMC) all the way to somatic cells (\citealp{Graf09}).
 
-In this paper we focus on the maturation lines of hematopoietic stem cells. The lines start with Long Term Hematopoietic Stem Cells (LT-HSC), which is progenitor of all blood cells. During its life, LT-HSC could either divide into two LT-HSC or turn into Short Term Hematopoietic Stem Cell (ST-HSC). SH-HSC will then undergo a transition process into either Common Myeloid Progenitor (CMP) or Common Lymphoid Progenitor (CLP). As the names suggest, both cells are the ancestor of all myeloid cells and lymphocites, respectively. Each would then further maturate into their respective intermediate cells and eventually the mature somatic cells (Red Blood Cells, Megakaryocytes, Mast Cells, Eosinophils, Neutrophils and Macrophages from CMP and B and T Lymphocytes from CLP; see figure (\textbf{TODO put hierarchy})).
+In this paper we focus on the maturation lines of hematopoietic stem cells (\citealp{Orkin08}). The lines start with Long Term Hematopoietic Stem Cells (LT-HSC), which is progenitor of all blood cells. During its life, LT-HSC could either divide into two LT-HSC or turn into Short Term Hematopoietic Stem Cell (ST-HSC). SH-HSC will then undergo a transition process into either Common Myeloid Progenitor (CMP) or Common Lymphoid Progenitor (CLP). As the names suggest, both cells are the ancestor of all myeloid cells and lymphocites, respectively. Each would then further maturate into their respective intermediate cells and eventually the mature somatic cells (Red Blood Cells, Megakaryocytes, Mast Cells, Eosinophils, Neutrophils and Macrophages from CMP and B and T Lymphocytes from CLP; see Figure \ref{fig:01}).
 
-The decision process of CMP transitioning into either MEP and GMP stands in focus of our project. Two transcription factors, \texttt{Pu.1}and \texttt{Gata.1} are thought to influence the decision process. Moreover, both transcription factors are known to inhibit each other. It is thought that the whole cross inhibition dynamics between the two has an impact on the fate of Common Myeloid Progentir. We assume this interaction to have "tipping a balance impact" on the fate of the cells, in which a dominating effect of one transcription factor would have a decisive role on the transition.
+\begin{figure}[h]
+\includegraphics[width=8cm]{figures/homatopoietic_focus}
+\caption{Maturation cascade of intermediate Common Myeloid Progenitor (CMP) to Megakaryocyte-Eerythroid Progenitor (MEP) and Granulocyte/Macrophage Progenitor (GMP). MEP would then maturate into somatic Red Blood Cells and Megakaryocites while GMP would undergo maturation into Granulocytes and Monocyptes. For each process there are known factors which are known to interact antagonistically on maturation decision. Our CMP to MEP and GMP decision stands on the top of the figure with two transcription factors of interest, \texttt{Pu.1} and \texttt{Gata.1} interact atagonistically.}\label{fig:01}
+\end{figure}
+
+The decision process of CMP transitioning into either MEP and GMP stands in focus of our project. Two transcription factors, \texttt{Pu.1}and \texttt{Gata.1} are thought to influence the decision process (\citealp{Graf09}). Moreover, both transcription factors are known to inhibit each other. It is thought that the whole cross inhibition dynamics between the two has an impact on the fate of Common Myeloid Progentir. We assume this interaction to have "tipping a balance impact" on the fate of the cells, in which a dominating effect of one transcription factor would have a decisive role on the transition.
 
 For this project we use particle filtering to learn more about this dynamics. We apply this technique on our time-dependent expression data of single cells containing concentration of both transcription factors. The approach of the experiment would be further described in the next section followed by the theoretical aspects of the particle filtering and other methods used in this project.
 
 \section{Approach}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quam sapien, gravida quis blandit eget, euismod sit amet ante. Ut sapien sem, tincidunt ut sollicitudin ut, fermentum eu sapien. Quisque interdum aliquet ante non luctus. Donec ex purus, vehicula et pellentesque eu, tempus in tellus. Nullam euismod nisl vitae enim dignissim finibus. Maecenas laoreet risus in placerat auctor. Phasellus id magna vitae metus placerat porttitor at a nibh. Aliquam sit amet tortor ut lorem feugiat gravida. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nulla venenatis erat id dolor pretium, ac lacinia odio elementum. Nunc non imperdiet tortor.
+For the single cell dynamic analysis to be possible, we were interested in gaining insight in single cell transcription data of both \texttt{Pu.1} and \texttt{Gata.1}. We combine two techniques for this to be possible: single cell tracking and protein tagging.
 
 \subsection{Experimental Setting}
 
@@ -55,6 +60,8 @@ The stem cells were put in a culture for one week. Two videos of the cells, take
 Once every 20-30 minutes a  protein expression levels of each cell would then be measured. The expressed protein of interests (in our case \texttt{Pu.1} and \texttt{Gata.1}) were tagged with distinct fluorescence proteins, which would allow for the expression level measurement at each time point.
 
 \section{Models}
+
+We model our 
 
 \subsection{Particle Filtering}
 
@@ -330,13 +337,13 @@ Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
 Text Text Text  Text Text Text Text Text Text  Text Text.
 \citealp{Boffelli03} might want to know about text text text text
 
-\begin{figure}[!tpb]%figure1
-\fboxsep=0pt\colorbox{gray}{\begin{minipage}[t]{235pt} \vbox to 100pt{\vfill\hbox to
-235pt{\hfill\fontsize{24pt}{24pt}\selectfont FPO\hfill}\vfill}
-\end{minipage}}
-%\centerline{\includegraphics{fig01.eps}}
-\caption{Caption, caption.}\label{fig:01}
-\end{figure}
+%\begin{figure}[!tpb]%figure1
+%\fboxsep=0pt\colorbox{gray}{\begin{minipage}[t]{235pt} \vbox to 100pt{\vfill\hbox to
+%235pt{\hfill\fontsize{24pt}{24pt}\selectfont FPO\hfill}\vfill}
+%\end{minipage}}
+%%\centerline{\includegraphics{fig01.eps}}
+%\caption{Caption, caption.}\label{fig:01}
+%\end{figure}
 
 %\begin{figure}[!tpb]%figure2
 %%\centerline{\includegraphics{fig02.eps}}

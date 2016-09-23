@@ -63,7 +63,7 @@ Figure \ref{fig:02} shows how the dataset from similarly conducted experiment ta
 
 \begin{figure}[h]
 \includegraphics[width=8cm]{figures/cell-generations.png}
-\caption{Example of single cell expression data. In this example, initially only one cell is observed under the bright-field and ultraviolet recording. The cell would then divide into two other cells. The system automatically recognizes this and separate measurements of expression would then be conducted, which is visible in the lower part of the figure. The above example also makes point of the uniqueness and tracability of each cell by pointing two specific lineages within the data: the blue and red lineages. The system records complete expression measurement of the lineages which could be seen in second half of the figure corresponding with the first half of the figure. The system is capable of recording not only cell division but also cell deaths, as can be seen through the x's sign in the upper part of the figure. Figure taken from (\citealp{Feigelman16)}}\label{fig:02}
+\caption{Example of single cell expression data. In this example, initially only one cell is observed under the bright-field and ultraviolet recording. The cell would then divide into two other cells. The system automatically recognizes this and separate measurements of expression would then be conducted, which is visible in the lower part of the figure. The above example also makes point of the uniqueness and tracability of each cell by pointing two specific lineages within the data: the blue and red lineages. The system records complete expression measurement of the lineages which could be seen in second half of the figure corresponding with the first half of the figure. The system is capable of recording not only cell division but also cell deaths, as can be seen through the x's sign in the upper part of the figure. Figure taken from \citealp{Feigelman16)}  }\label{fig:02}
 \end{figure}
 
 \section{Models}
@@ -164,7 +164,7 @@ Ki := (K_{i1}, K_{i2}, \dots, K_{im})\label{eq:11}
 \item Weighting of each particle. The weight is a function of probability of observing the data given the simulation result.
 
 \begin{equation}
-w_i^k = P(D_i | X_i^k) = \mathcal{N}(D_i | X_i^k)\label{eq:12}
+w_i^k = P(D_i | X_i^k) = \mathcal{N}(\mathcal{D}_i | X_i^k)\label{eq:12}
 \end{equation}
 
 \item Parameter update for every K,
@@ -178,6 +178,13 @@ w_i^k = P(D_i | X_i^k) = \mathcal{N}(D_i | X_i^k)\label{eq:12}
 \item Model comparison. This could be done by measure such as AIC, BIC, Bayes Factor etc.
 
 \end{enumerate}
+
+The visualization of the whole particle filtering process could be seen in Figure \ref{fig:03}.
+
+\begin{figure}[h]
+\includegraphics[width=8cm]{figures/particle_filtering.png}
+\caption{Visualization of particle filtering. (A): The particle filter requires a series of observation $\mathcal{D} = (\mathcal{D}_0, \mathcal{D}_1, \cdots \mathcal{D}_N)$ (top) and a prior distribution for model parameters $\pi(\theta)$ (bottom) as input. (B): Particles are initialized by sampling initial states $X(K)$ for each particle $K$. Parameters $\Theta$ are sampled from the prior distribution $\pi(\theta)$. (C): The trajectories are resampled according to the likelihood $w_0^{(k)} = P(D_0|X_0(k))$ and propagated to the next time step using stochastic simulations to generate new states $X_1^{(k)}$ at timepoint $t_1$. Model parameters for each latent trajectory are resampled from the conditional distribution $P(\theta|X^{(k)}_{[t0,t1]})$. (D): At each iteration, the weights are recomputed and the particles are resampled. Resampled particles are propagated to the next timepoint and the parameters are resampled conditional on the resampled latent trajectories. Over time the posterior parameter distribution converges to the true value. Figure taken from (\citealp{Feigelman16})}  \label{fig:03}
+\end{figure}
 
 \subsubsection{Particle Generation}
 
@@ -366,8 +373,7 @@ Text Text Text\vspace*{-10pt}
 
 \section*{Acknowledgements}
 
-Text Text Text Text Text Text  Text Text.  \citealp{Boffelli03} might want to know about  text
-text text text\vspace*{-12pt}
+We would like to acknowledge X, Y and Z from Institute of A of B who thoroughly conducted the experiment our paper bases its analysis on. We would also thanks Fabian Theis from the Institute of Computational Biology of the Helmholtz Zentrum Munich and Werner Mewes, Jan Quell and Anna Dieckmann from the Institute of Bioinformatics and Systems Biology of the Helmholtz Zentrum Munich for their tireless supports during the project.\vspace*{-12pt}
 
 \section*{Funding}
 

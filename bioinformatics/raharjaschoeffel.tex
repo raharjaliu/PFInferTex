@@ -1,6 +1,7 @@
 \documentclass{bioinfo}
 \copyrightyear{2016} \pubyear{2016}
 
+
 \usepackage{tikz}
 \usetikzlibrary{calc}
 
@@ -25,8 +26,8 @@ $^{\text{\sf 3}}$Helmholtz Zentrum M\"unchen, Institute of Computational Biology
 
 \editor{Associate Editor: Jan Quell}
 
-\abstract{\textbf{Motivation:} Stochasticity of gene expression becomes apparent when studying the dynamics of single cells rather tan a population of cells. These fluctuations in gene expression in fact reveal more information about the underlying mechanisms of transcription and translation than one could obtain from population averages.\\
-\textbf{Results:}In this paper we developed a particle filtering algorithm to infer the parameters of stochastic models from single cell time series data. In particular, we apply this method to time-lapse microscopy data of two transcription factors (\texttt{Pu.1} and \texttt{Gata.1}) in murine blood stem cells. These transcription are thought to play a major role in stem cell differentiation. Our results provide several insights into the dynamics of blood stem cells maturation and specifically in the single cell environment, we managed to gain several valuable insights on the interaction dynamics between two transcription factors and the outcome of cell maturation.\\
+\abstract{\textbf{Motivation:} Stochasticity of gene expression becomes apparent when studying the dynamics of single cells rather than a population of cells. These fluctuations in gene expression in fact reveal more information about the underlying mechanisms of transcription and translation than one could obtain from population averages.\\
+\textbf{Results:}In this paper we developed a particle filtering algorithm to infer the parameters of stochastic models from single cell time series data. In particular, we apply this method to time-lapse microscopy data of two transcription factors (\texttt{Pu.1} and \texttt{Gata.1}) in murine blood stem cells. These transcription are thought to play a major role in stem cell differentiation. Our results provide several insights into the dynamics of blood stem cells maturation and specifically in the single cell environment, we managed to gain several valuable insights on the interaction dynamics between two transcription factors and the outcome of cell maturation. While doing so, we managed to developed highly flexible general purpose highly parallelized framework to model dynamical systems using particle filtering. This software was then released as free software for anyone to use.\\
 \textbf{Availability:} The data are available upon request. A general framework for determining the parameters that best explain the data were published under open source license. The complete source code of the program is publicly accessible at \href{https://github.com/raharjaliu/PFInfer}{https://github.com/raharjaliu/PFInfer}.\\
 \textbf{Contact:} \href{pandu.raharja@tum.de}{pandu.raharja@tum.de}\\
 \textbf{Supplementary information:} Supplementary data are available at \textit{Bioinformatics}
@@ -106,7 +107,7 @@ In our simulation we know that, to compute prior $P(\mathcal{D} | X, \theta)$, o
 P(\mathcal{D} | X, \theta) = P(\mathcal{D} | X)\label{eq:05}
 \end{equation}
 
-Not that the above equation inherently assumes that $\mathcal{D}$ is only directly dependent on $X$ and $X$ is in turn only directly dependent on $\theta$. Incorporating this onto our update rule, and expanding the definition of $P(X, \theta)$ using chain rule, we get
+Note that the above equation inherently assumes that $\mathcal{D}$ is only directly dependent on $X$ and $X$ is in turn only directly dependent on $\theta$. Incorporating this onto our update rule, and expanding the definition of $P(X, \theta)$ using chain rule, we get
 
 \begin{equation}
 P(X, \theta | \mathcal{D}) = \frac{P(\mathcal{D} | X)  P(X | \theta) \pi(\theta)}{P(\mathcal{D})}\label{eq:06}
@@ -338,18 +339,48 @@ Assuming a priori equally likely models, the factor of $P(M)$ in (\ref{eq:26}) c
 B_{M1, M2} = \frac{P(\mathcal{D} | M_1)}{P(\mathcal{D} | M_2)}\label{eq:29}
 \end{equation}
 
+\section{Result}
+
+The particle filter algorithm was applied to a time series data set containing the cell lineage of a murine stem cell. Each edge in the time series tree was simulated using 50 Particles. For each of the 41 stem cells present at the end of the experiment 50 Particles were sample according to their weights. The parameters from each chosen Particle were combined resulting in gamma distribution for each of the 6 Parameters. These Gamma Distributions represent the described posterior (Equation \ref{eq:03}) and their expected value is the optimal fit for the model over the cell lineage tree contained in the time series data.
+
+A distribution created upon repetitively sampling the fitted parameters from each cell would then in turn be Gamma distributed. This is of then in line with our assumption. An example of fitted parameter sampled from all cells could be seen in Figure \ref{fig:04}. Table \ref{tab:01} shows the fitted values for distribution sampled for all involved parameters in our simulation.
+
+
+\begin{figure}[h]
+\includegraphics[width=8cm]{figures/kpp.pdf}
+\caption{An example fitted parameter distribution. This example shows the sampled distribution of fitted parameter for expression reaction of \texttt{Pu.1}, \texttt{Kpp}. }  \label{fig:04}
+\end{figure}
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{|l | c | c | c |}
+\hline
+Parameter & Shape & Scale & Expected \\
+\hline
+\texttt{Kpg} & 1.0695 & 18.2771 & 19.4570 \\
+\texttt{Kpp} & 0.9910 & 19.5851 & 19.4089 \\
+\texttt{Kdg} & 1.0520 & 0.4837 & 0.5089 \\
+\texttt{Kdp} & 1.0366 & 0.4757 & 0.4931 \\
+\texttt{KInhibitG} & 0.9422 & 21.4545 & 20.2145 \\
+\texttt{KInhibitP} & 1.0069 & 20.3016 & 20.4407 \\
+\hline
+\end{tabular}
+
+\vspace*{5pt}
+
+\caption{The fitted shapes and scales of the underlying parameter disribution for all parameters involved in linear decision process. The values were fitted from the distribution of parameters sampled from all simulated particles. An example of such distribution could be seen in Figure \ref{fig:04}). In that example, the red line was the probability density function of the Gamma distribution underlying the parameter.}
+\end{center}
+\label{tab:01}
+\end{table}
 
 \section{Discussion}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quam sapien, gravida quis blandit eget, euismod sit amet ante. Ut sapien sem, tincidunt ut sollicitudin ut, fermentum eu sapien. Quisque interdum aliquet ante non luctus. Donec ex purus, vehicula et pellentesque eu, tempus in tellus. Nullam euismod nisl vitae enim dignissim finibus. Maecenas laoreet risus in placerat auctor. Phasellus id magna vitae metus placerat porttitor at a nibh. Aliquam sit amet tortor ut lorem feugiat gravida. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nulla venenatis erat id dolor pretium, ac lacinia odio elementum. Nunc non imperdiet tortor.
+The model is based on the theory that a cross inhibition of the transcription factors \texttt{Pu.1} and \texttt{Gata.1} results in a switch like behavior of the transcription factors, which in turn governs the CMP lineage decision. Our results however cannot support this hypothesis as the fitted model parameters \texttt{KInhibitG} and \texttt{KInhibitP}, which represent the concentrations at which the production inhibition of \texttt{Gata.1} and \texttt{Pu.1} through the transcription factors is at half its maximum value, are significantly higher than the actual concentrations of \texttt{Pu.1} and \texttt{Gata.1} present in the time series data. This suggests that almost no inhibitory effect is apparent in the experiment. Furthermore the high similarity between both the production and degradation ratios of the transcription factors cannot account for uneven outcome of lineage decision via stochastic process.
+
 
 \section{Conclusion}
 
-Equation~(\ref{eq:01}) Text Text Text Text Text Text  Text Text
-Text Text Text Text Text Text Text Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text  Text Text Text Text Text Text  Text Text.
-\citealp{Boffelli03} might want to know about text text text text
+In the course of this project we managed to implement the Particle Filter Algorithm as a framework for the inference of model parameters through the use of time series data. The resulting fitted parameters didn't support our initial hypothesis of a cross inhibition between \textit{Gata.1} and \textit{Pu.1}. This finding was also confirmed by other publication which used the same data set claiming independence of early myeloid lineage choice with regards to the transcription factors \texttt{Pu.1} and \texttt{Gata.1} (\citealp{Hoppe16}). This highlights our framework's capability to convey underlying mechanics prior unknown to us. We also show that our framework could be used both prior the experiment and post-experiment to elucidate scientists during their experiment routine. This in turn hallmarks our framework potential as supporting tool for research scientists.
 
 %\begin{figure}[!tpb]%figure1
 %\fboxsep=0pt\colorbox{gray}{\begin{minipage}[t]{235pt} \vbox to 100pt{\vfill\hbox to
@@ -365,19 +396,15 @@ Text Text Text  Text Text Text Text Text Text  Text Text.
 %\end{figure}
 
 
-Text Text Text Text Text Text  Text Text Text Text Text Text Text
-Text Text  Text Text Text Text Text Text.
-Figure~2\vphantom{\ref{fig:02}} shows that the above method  Text
-Text Text Text\vspace*{-10pt}
-
-
 \section*{Acknowledgements}
 
-We would like to acknowledge X, Y and Z from Institute of A of B who thoroughly conducted the experiment our paper bases its analysis on. We would also thanks Fabian Theis from the Institute of Computational Biology of the Helmholtz Zentrum Munich and Werner Mewes, Jan Quell and Anna Dieckmann from the Institute of Bioinformatics and Systems Biology of the Helmholtz Zentrum Munich for their tireless supports during the project.\vspace*{-12pt}
+We would like to express our gratitude to Werner Mewes, Fabian Theis, Jan Quell and Anna Dieckman for facilitating the project. We would also like to thanks Philipp S. Hoppe, Michael Schwarzfischer, Dirk Loeffler, Konstantinos D. Kokkaliaris, Oliver Hilsenbeck, Nadine Moritz, Max Endele, Adam Filipczyk, Adriana Gambardella, Nouraiz Ahmed, Martin Etzrodt, Daniel L. Coutu, Michael A. Rieger, Bernhard Schauberger, Ingo Burtscher, Olga Ermakova, Antje B\"urger, Heiko Lickert, Claus Nerlov and Timm Schroder who agreed to provide us with the experiment data, without which we wouldn't be able to test our framework and models.
+
+\vspace*{-12pt}
 
 \section*{Funding}
 
-This work has been supported by the... Text Text  Text Text.\vspace*{-12pt}
+We acknowledge the fact that the project and corresponding projects this project is based on are, directly and undirectly, financed by several grants given to following institutes within the Helmholtz Zentrum M\"unchen: the Institute of Bioinformatics and Systems Biology, the Institute of Computational Biology, the Institute of Diabetes and Regeneration Research, the Institute of Development Genetics and the Research Unit Stem Cell Dynamics. Some grants might also be involved coming from following institutions: Department of Biosystems Science and Engineering at ETH Zurich, MRC Molecular Haematology Unit at University of Oxford, Institute di Biologia Cellulare e Neurobiologia at CNR, Beta Cell Biology at the Medical Faculty of the Technical University of Munich, Department of Mathematics at the Technical University of Munich and EMBL Mouse Biology Unit.\vspace*{-12pt}
 
 %\bibliographystyle{natbib}
 %\bibliographystyle{achemnat}
@@ -393,7 +420,7 @@ This work has been supported by the... Text Text  Text Text.\vspace*{-12pt}
 \begin{thebibliography}{}
 
 \bibitem[Feigelman., 2016]{Feigelman16}
-Feigelman, J. (2011). "Stochastic and deterministic methods for the analysis of Nanog dynamics in mouse embryonic stem cells." PhD Thesis, Technische Universit\"at M\"unchen, Munich, Germany.\vspace*{-2pt}
+Feigelman, J. (2016). "Stochastic and deterministic methods for the analysis of Nanog dynamics in mouse embryonic stem cells." PhD Thesis, Technische Universit\"at M\"unchen, Munich, Germany.\vspace*{-2pt}
 
 \bibitem[Graf \& Enver, 2009]{Graf09}
 Graf, T., \& Enver, T. (2009). Forcing cells to change lineages. \textit{Nature}, \textbf{462(7273)}, 587-594.
@@ -402,6 +429,11 @@ Graf, T., \& Enver, T. (2009). Forcing cells to change lineages. \textit{Nature}
 Filipczyk, A., Marr, C., Hastreiter, S., Feigelman, J., Schwarzfischer, M., Hoppe, P. S., ... \& Hilsenbeck, O. (2015). Network plasticity of pluripotency transcription factors in embryonic stem cells. \textit{Nature cell biology.}
 
 \bibitem[Orkin {\it et~al}, 2008]{Orkin08}
+Orkin, S. H., \& Zon, L. I. (2008). Hematopoiesis: an evolving paradigm for stem cell biology. \textit{Cell}, \textbf{132(4)}, 631-644.
+
+\bibitem[Hoppe {\it et~al}, 2016]{Hoppe16}
+Hoppe, P.S., Schwarzfischer, M., Loeffler, D.,  Kokkaliaris, K.D., Hilsenbeck, O., Mortz, N., ... \& Etzrodt, M. (2016). Early myeloid lineage choice is not initiated by random PU.1 to GATA1 protein ratios. \textit{Nature}, \textbf{535(7611)}, 299-302.
+
 Orkin, S. H., \& Zon, L. I. (2008). Hematopoiesis: an evolving paradigm for stem cell biology. \textit{Cell}, \textbf{132(4)}, 631-644.
 
 \bibitem[Gillespie, 2007]{Gillespie07}

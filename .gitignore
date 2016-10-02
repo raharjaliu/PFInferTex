@@ -178,3 +178,8 @@ TSWLatexianTemp*
 
 # KBibTeX
 *~[0-9]*
+
+# Project Specific
+.DS_Store
+bioinformatics/.DS_Store
+

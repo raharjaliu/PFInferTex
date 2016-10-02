@@ -26,8 +26,9 @@ $^{\text{\sf 3}}$Helmholtz Zentrum M\"unchen, Institute of Computational Biology
 
 \editor{Associate Editor: Jan Quell}
 
-\abstract{\textbf{Motivation:} Stochasticity of gene expression becomes apparent when studying the dynamics of single cells rather than a population of cells. These fluctuations in gene expression in fact reveal more information about the underlying mechanisms of transcription and translation than one could obtain from population averages.\\
-\textbf{Results:}In this paper we developed a particle filtering algorithm to infer the parameters of stochastic models from single cell time series data. In particular, we apply this method to time-lapse microscopy data of two transcription factors (\texttt{Pu.1} and \texttt{Gata.1}) in murine blood stem cells. These transcription are thought to play a major role in stem cell differentiation. Our results provide several insights into the dynamics of blood stem cells maturation and specifically in the single cell environment, we managed to gain several valuable insights on the interaction dynamics between two transcription factors and the outcome of cell maturation. While doing so, we managed to developed highly flexible general purpose highly parallelized framework to model dynamical systems using particle filtering. This software was then released as free software for anyone to use.\\
+\abstract{\textbf{Motivation:} 
+Unlike averaged effect commonly found in aggregate cells population data, the dynamics of single cell strongly exhibits the stochasticity of gene expression. These stochastically influenced dynamics in gene expression appears to convey more information about the background mechanism of gene expression routines than it would be otherwise understood through the study of population average.\\
+\textbf{Results:}In this paper we presented a particle filtering-based algorithm and framework that is capable of inferring parameters underlying the stochastic models from single cell expression data. This framework was then applied on time-lapsed microscopy data of two transcription factors (\texttt{Pu.1} and \texttt{Gata.1}) in murine blood stem cells. It is thought that both transcription factors play decisive roles in several stages of stem cell differentiation, especially the differentiation of hematopoetic stem cells. Our results provide several insights into the dynamics of blood stem cells maturation and specifically in the single cell environment, we managed to gain several valuable insights on the interaction dynamics between two transcription factors and the outcome of cell maturation. While doing so, we managed to developed highly flexible general purpose highly parallelized framework to model dynamical systems using particle filtering. The general framework software is now available as free software for anyone to use.\\
 \textbf{Availability:} The data are available upon request. A general framework for determining the parameters that best explain the data were published under open source license. The complete source code of the program is publicly accessible at \href{https://github.com/raharjaliu/PFInfer}{https://github.com/raharjaliu/PFInfer}.\\
 \textbf{Contact:} \href{pandu.raharja@tum.de}{pandu.raharja@tum.de}\\
 \textbf{Supplementary information:} Supplementary data are available at \textit{Bioinformatics}
@@ -37,7 +38,7 @@ online.}
 
 \section{Introduction}
 
-The advances in gene expression measurement techniques, coupled with equally rapid advances in single cell analytics, have allowed the more recent single cell analysis of cell dynamics. This has enabled us to look deeper into the dynamics of stem cell maturation. In recent years, we have discovered several genes that potentially are involved in the decision making mechanism of cell maturation going from Inner Mass Cell (IMC) all the way to somatic cells (\citealp{Graf09}).
+The advances in gene expression measurement techniques, coupled with equally rapid advances in single cell analytics, have allowed the more recent single cell analysis of cell dynamics. This has enabled us to look deeper into the dynamics of stem cell maturation. In recent years, several genes that potentially are involved in the decision making mechanism of cell maturation going from Inner Mass Cell (IMC) all the way to somatic cells have been discovered and widely known by now (\citealp{Graf09}).
 
 In this paper we focus on the maturation lines of hematopoietic stem cells (\citealp{Orkin08}). The lines start with Long Term Hematopoietic Stem Cells (LT-HSC), which is progenitor of all blood cells. During its life, LT-HSC could either divide into two LT-HSC or turn into Short Term Hematopoietic Stem Cell (ST-HSC). SH-HSC will then undergo a transition process into either Common Myeloid Progenitor (CMP) or Common Lymphoid Progenitor (CLP). As the names suggest, both cells are the ancestor of all myeloid cells and lymphocites, respectively. Each would then further maturate into their respective intermediate cells and eventually the mature somatic cells (Red Blood Cells, Megakaryocytes, Mast Cells, Eosinophils, Neutrophils and Macrophages from CMP and B and T Lymphocytes from CLP; see Figure \ref{fig:01}).
 
@@ -46,7 +47,7 @@ In this paper we focus on the maturation lines of hematopoietic stem cells (\cit
 \caption{Maturation cascade of intermediate Common Myeloid Progenitor (CMP) to Megakaryocyte-Eerythroid Progenitor (MEP) and Granulocyte/Macrophage Progenitor (GMP). MEP would then maturate into somatic Red Blood Cells and Megakaryocites while GMP would undergo maturation into Granulocytes and Monocyptes. For each process there are known factors which are known to interact antagonistically on maturation decision. Our CMP to MEP and GMP decision stands on the top of the figure with two transcription factors of interest, \texttt{Pu.1} and \texttt{Gata.1} interact atagonistically. Figure taken from (\citealp{Graf09}).}\label{fig:01}
 \end{figure}
 
-The decision process of CMP transitioning into either MEP and GMP stands in focus of our project. Two transcription factors, \texttt{Pu.1}and \texttt{Gata.1} are thought to influence the decision process (\citealp{Graf09}). Moreover, both transcription factors are known to inhibit each other. It is thought that the whole cross inhibition dynamics between the two has an impact on the fate of Common Myeloid Progentir. We assume this interaction to have "tipping a balance impact" on the fate of the cells, in which a dominating effect of one transcription factor would have a decisive role on the transition.
+The decision process of CMP transitioning into either MEP and GMP stands in focus of our project. Two transcription factors, \texttt{Pu.1}and \texttt{Gata.1} are thought to influence the decision process (\citealp{Graf09}). Moreover, both transcription factors are known to inhibit each other. It is thought that the whole cross inhibition dynamics between the two has an impact on the fate of Common Myeloid Progenitor. This dual-agent dynamics is thought to behave in a way that is self-fulfilling. That is, a slight change in concentration of transcription factors favoring one state over another will have stupendous impact on cell fate decision.
 
 For this project we use particle filtering to learn more about this dynamics. We apply this technique on our time-dependent expression data of single cells containing concentration of both transcription factors. The approach of the experiment would be further described in the next section followed by the theoretical aspects of the particle filtering and other methods used in this project.
 
@@ -56,7 +57,7 @@ For the single cell dynamic analysis to be possible, we were interested in gaini
 
 \subsection{Experimental Setting}
 
-The stem cells were put in a culture for one week. Two videos of the cells, taken under bright-field and ultraviolet microscopy, would then be taken for the whole duration of experiment. An automatic detection program tracks down each cell uniquely within the video frame. The program also tracks down cell division would track the newly created cells likewise. It also detects cell death.
+The stem cells were put in a culture for one week. Two videos of the cells, taken under bright-field and ultraviolet microscopy, would then be taken for the whole duration of experiment. An automatic detection program tracks down each cell uniquely within the video frame. The program also tracks down cell division and would assign a unique identifier to the newly created cells. It also detects cell death.
 
 Once every 20-30 minutes a  protein expression levels of each cell would then be measured. The expressed protein of interests (in our case \texttt{Pu.1} and \texttt{Gata.1}) were tagged with distinct fluorescence proteins, which would allow for the expression level measurement at each time point.
 
@@ -64,7 +65,7 @@ Figure \ref{fig:02} shows how the dataset from similarly conducted experiment ta
 
 \begin{figure}[h]
 \includegraphics[width=8cm]{figures/cell-generations.png}
-\caption{Example of single cell expression data. In this example, initially only one cell is observed under the bright-field and ultraviolet recording. The cell would then divide into two other cells. The system automatically recognizes this and separate measurements of expression would then be conducted, which is visible in the lower part of the figure. The above example also makes point of the uniqueness and tracability of each cell by pointing two specific lineages within the data: the blue and red lineages. The system records complete expression measurement of the lineages which could be seen in second half of the figure corresponding with the first half of the figure. The system is capable of recording not only cell division but also cell deaths, as can be seen through the x's sign in the upper part of the figure. Figure taken from \citealp{Feigelman16)}  }\label{fig:02}
+\caption{Example of single cell expression data. In this example, initially only one cell is observed under the bright-field and ultraviolet recording. The cell would then divide into two other cells. The system automatically recognizes this and separate measurements of expression would then be conducted, which is visible in the lower part of the figure. The above example also makes point of the uniqueness and tracability of each cell by pointing two specific lineages within the data: the blue and red lineages. The system records complete expression measurement of the lineages which could be seen in second half of the figure corresponding with the first half of the figure. The system is capable of recording not only cell division but also cell deaths, as can be seen through the x's sign in the upper part of the figure. Figure taken from \citealp{Feigelman16}.}\label{fig:02}
 \end{figure}
 
 \section{Models}
@@ -75,7 +76,7 @@ We utilize particle filtering to learn the dynamics of maturation of Common Myel
 
 \subsubsection{Particle}
 
-We use particle filtering in our simulation. Particle filtering is a family of methods that use utilize the concept of \textit{particle}. A particle $\mathcal{K}$ is defined as a triple of trajectory $X$, parameter set $\theta$ and assumed model $\mathcal{M}$,
+We use particle filtering in our simulation. Particle filtering is a family of methods that utilize the concept of \textit{particle}. A particle $\mathcal{K}$ is defined as a triple of trajectory $X$, parameter set $\theta$ and assumed model $\mathcal{M}$,
 
 \begin{equation}
 \mathcal{K} := (X, \theta, \mathcal{M})\label{eq:01}
@@ -113,12 +114,16 @@ Note that the above equation inherently assumes that $\mathcal{D}$ is only direc
 P(X, \theta | \mathcal{D}) = \frac{P(\mathcal{D} | X)  P(X | \theta) \pi(\theta)}{P(\mathcal{D})}\label{eq:06}
 \end{equation}
 
-One of the interesting aspects of our is the fact that the i-th simulation result is only dependent on previous simulation, a property known as \textit{Markov property}. We could thus rewrite the update rule as follow,
+One of the interesting aspects of our method is the fact that the i-th simulation result is only dependent on previous simulation, a property known as \textit{Markov property}. We could thus rewrite the update rule as follow,
 
 % TODO correct the second product definition. It seems off
 
+%\begin{equation}
+%P(X, \theta | \mathcal{D}) = \frac{\prod_{i=0}^{N} P(\mathcal{D}_i | X_i) P(X_0) \prod_{l=1}^{N} P(X_{[t-1, ti]} | X_i, \theta)\pi(\theta)}{P(\mathcal{D})}\label{eq:07}
+%\end{equation}
+
 \begin{equation}
-P(X, \theta | \mathcal{D}) = \frac{\prod_{i=0}^{N} P(\mathcal{D}_i | X_i) P(X_0) \prod_{l=1}^{N} P(X_{[t-1, ti]} | X_i, \theta)\pi(\theta)}{P(\mathcal{D})}\label{eq:07}
+P(X, \theta | \mathcal{D}) = \frac{\prod_{i=0}^{N} P(\mathcal{D}_i | X_i) P(X_0) \prod_{l=1}^{N} P(X_{[tl-1, tl]} | X_l, \theta)\pi(\theta)}{P(\mathcal{D})}\label{eq:07}
 \end{equation}
 
 \subsubsection{Parameters}
@@ -419,7 +424,7 @@ We acknowledge the fact that the project and corresponding projects this project
 
 \begin{thebibliography}{}
 
-\bibitem[Feigelman., 2016]{Feigelman16}
+\bibitem[Feigelman, 2016]{Feigelman16}
 Feigelman, J. (2016). "Stochastic and deterministic methods for the analysis of Nanog dynamics in mouse embryonic stem cells." PhD Thesis, Technische Universit\"at M\"unchen, Munich, Germany.\vspace*{-2pt}
 
 \bibitem[Graf \& Enver, 2009]{Graf09}

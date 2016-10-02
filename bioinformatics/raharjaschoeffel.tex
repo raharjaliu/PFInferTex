@@ -192,6 +192,8 @@ The visualization of the whole particle filtering process could be seen in Figur
 \caption{Visualization of particle filtering. (A): The particle filter requires a series of observation $\mathcal{D} = (\mathcal{D}_0, \mathcal{D}_1, \cdots \mathcal{D}_N)$ (top) and a prior distribution for model parameters $\pi(\theta)$ (bottom) as input. (B): Particles are initialized by sampling initial states $X(K)$ for each particle $K$. Parameters $\Theta$ are sampled from the prior distribution $\pi(\theta)$. (C): The trajectories are resampled according to the likelihood $w_0^{(k)} = P(D_0|X_0(k))$ and propagated to the next time step using stochastic simulations to generate new states $X_1^{(k)}$ at timepoint $t_1$. Model parameters for each latent trajectory are resampled from the conditional distribution $P(\theta|X^{(k)}_{[t0,t1]})$. (D): At each iteration, the weights are recomputed and the particles are resampled. Resampled particles are propagated to the next timepoint and the parameters are resampled conditional on the resampled latent trajectories. Over time the posterior parameter distribution converges to the true value. Figure taken from (\citealp{Feigelman16})}  \label{fig:03}
 \end{figure}
 
+\vspace*{-6pt}
+
 \subsubsection{Particle Generation}
 
 As mentioned before, A particle $\mathcal{K}$ is defined as a 3-tuple of trajectory $X$, parameter set $\theta$ and assumed model $\mathcal{M}$. For a specific model, j-th particle at i-th time particle is then just a tuple of trajectory and parameter set $k_{ij} = (x_i, \theta_{ij})$.
@@ -206,7 +208,7 @@ M particles would then be created and for each iteration of the simulation with 
 
 \subsubsection{Simulation Run}
 
-Simulation is done using Gillespie's SSA algorithm. There are possible improvements that we thought might be useful in our project such as $\tau$-leaping and Bayesian Approximation Method. Such improvements are generally essential since it would reduce computational cost of the simulation and in turn enable the simulation to scale further to accommodate more leveraged simulation -- in our case we could simulate more cells at the same time in possible more fine-grained time-resolved manner. In our case especially, some kind of improvement would be needed to accommodate the explosion of the number of cells within our culture. Without some kind of approximative method there would be a bottleneck in simulation caused by the exponential increase of the number of living cells that have to be simulated.\\
+Simulation is done using Gillespie's SSA algorithm, named after Daniel Thomas Gillespie (\citealp{Gillespie77}). Dating back to as early as 1945, when it was developed by Joseph Doob \citealp{Doob45} \citealp{Chung67}, moden Gillespie implementation includes improvements developed years after the invention of the algorithm such as $\tau$-leaping and Bayesian Approximation Method. Such improvements are generally essential since it would reduce computational cost of the simulation and in turn enable the simulation to scale further to accommodate more leveraged simulation -- in our case we could simulate more cells at the same time in possible more fine-grained time-resolved manner. In our case especially, such improvements are needed to accommodate the explosion of the number of cells within our culture. Specificallt, an approximative method would prevent a bottleneck in simulation caused by the exponential increase of the number of living cells that have to be simulated.\\
 
 \textbf{Tau Leaping}
 
@@ -378,14 +380,19 @@ Parameter & Shape & Scale & Expected \\
 \label{tab:01}
 \end{table}
 
+\vspace*{-12pt}
+
 \section{Discussion}
 
 The model is based on the theory that a cross inhibition of the transcription factors \texttt{Pu.1} and \texttt{Gata.1} results in a switch like behavior of the transcription factors, which in turn governs the CMP lineage decision. Our results however cannot support this hypothesis as the fitted model parameters \texttt{KInhibitG} and \texttt{KInhibitP}, which represent the concentrations at which the production inhibition of \texttt{Gata.1} and \texttt{Pu.1} through the transcription factors is at half its maximum value, are significantly higher than the actual concentrations of \texttt{Pu.1} and \texttt{Gata.1} present in the time series data. This suggests that almost no inhibitory effect is apparent in the experiment. Furthermore the high similarity between both the production and degradation ratios of the transcription factors cannot account for uneven outcome of lineage decision via stochastic process.
 
+\vspace*{-6pt}
 
 \section{Conclusion}
 
 In the course of this project we managed to implement the Particle Filter Algorithm as a framework for the inference of model parameters through the use of time series data. The resulting fitted parameters didn't support our initial hypothesis of a cross inhibition between \textit{Gata.1} and \textit{Pu.1}. This finding was also confirmed by other publication which used the same data set claiming independence of early myeloid lineage choice with regards to the transcription factors \texttt{Pu.1} and \texttt{Gata.1} (\citealp{Hoppe16}). This highlights our framework's capability to convey underlying mechanics prior unknown to us. We also show that our framework could be used both prior the experiment and post-experiment to elucidate scientists during their experiment routine. This in turn hallmarks our framework potential as supporting tool for research scientists.
+
+\vspace*{-6pt}
 
 %\begin{figure}[!tpb]%figure1
 %\fboxsep=0pt\colorbox{gray}{\begin{minipage}[t]{235pt} \vbox to 100pt{\vfill\hbox to
@@ -441,6 +448,15 @@ Hoppe, P.S., Schwarzfischer, M., Loeffler, D.,  Kokkaliaris, K.D., Hilsenbeck, O
 
 Orkin, S. H., \& Zon, L. I. (2008). Hematopoiesis: an evolving paradigm for stem cell biology. \textit{Cell}, \textbf{132(4)}, 631-644.
 
+\bibitem[Gillespie, 1977]{Gillespie77}
+Gillespie, D. T. (1977). Exact stochastic simulation of coupled chemical reactions. \textit{The journal of physical chemistry}, \textbf{81(25)}, 2340-2361.
+
+\bibitem[Doob, 1945]{Doob45}
+Doob, J. L. (1945). Markoff chains--denumerable case. \textit{Transactions of the American Mathematical Society}, \textbf{58(3)}, 455-473.
+
+\bibitem[Chung, 1967]{Chung67}
+Chung, K. L. (1967). \textit{Markov Chain}. Berlin: Springer-Verlag.
+
 \bibitem[Gillespie, 2007]{Gillespie07}
 Gillespie, D. T. (2007). Stochastic simulation of chemical kinetics. \textit{Annu. Rev. Phys. Chem.}, \textbf{58}, 35-55.
 
@@ -458,6 +474,7 @@ Haseltine, E. L., \& Rawlings, J. B. (2005). On the origins of approximations fo
 
 \bibitem[Sherlock {\it et~al}., 2014]{Sherlock14}
 Sherlock, C., Golightly, A., \& Gillespie, C. S. (2014). Bayesian inference for hybrid discrete-continuous stochastic kinetic models. \textit{Inverse Problems}, \textbf{30(11)}, 114005.
+
 
 \end{thebibliography}
 \end{document}

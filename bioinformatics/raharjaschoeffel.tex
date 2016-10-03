@@ -1,7 +1,7 @@
 \documentclass{bioinfo}
 \copyrightyear{2016} \pubyear{2016}
 
-
+\usepackage{gensymb}
 \usepackage{tikz}
 \usetikzlibrary{calc}
 
@@ -57,9 +57,9 @@ For the single cell dynamic analysis to be possible, we were interested in gaini
 
 \subsection{Experimental Setting}
 
-The stem cells were put in a culture for one week. Two videos of the cells, taken under bright-field and ultraviolet microscopy, would then be taken for the whole duration of experiment. An automatic detection program tracks down each cell uniquely within the video frame. The program also tracks down cell division and would assign a unique identifier to the newly created cells. It also detects cell death.
+The data for the experiment were taken from \citealp{Hoppe16}. The expressed protein of interests \texttt{Pu.1} and \texttt{Gata.1} were tagged with distinct fluorescence proteins \texttt{eYFP} and \texttt{mCherry} respectively. Time-wise expression levels were then measured based on the intensity of aforementioned florescence proteins.
 
-Once every 20-30 minutes a  protein expression levels of each cell would then be measured. The expressed protein of interests (in our case \texttt{Pu.1} and \texttt{Gata.1}) were tagged with distinct fluorescence proteins, which would allow for the expression level measurement at each time point.
+Time-lapse imaging was performed at 37 $^{\circ}$C in fibronectin coated channel slides provided by Takara Bio. The light source for the experiment was a HXP 120 from Zeiss. 46HE and 43HE, both provided by Zeiss, were used to detect eYFP and mCherry fluorescence coming from the cells at exposure times between 400-1,500 ms using an AxioCam HRm from Zeiss. Bright field pictures were taken every 60-120 s while fluorescent pictures used for the measuring \texttt{PU.1-eYFP} and \texttt{GATA1-mCherry} were acquired every 30 min. Pictures used for analysis were saved in lossless TIF or PNG format. Single-cell tracking and image quantification were performed using self-written software as described
 
 Figure \ref{fig:02} shows how the dataset from similarly conducted experiment taken from (\citealp{Feigelman16}) visually look like.
 

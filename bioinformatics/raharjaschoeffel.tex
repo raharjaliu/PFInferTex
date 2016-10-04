@@ -38,17 +38,17 @@ online.}
 
 \section{Introduction}
 
-The advances in gene expression measurement techniques, coupled with equally rapid advances in single cell analytics, have allowed the more recent high resolution single cell analysis of cell dynamics \citealp{Hoppe16}. This has enabled us, for example, to look deeper into the dynamics of stem cell maturation. In recent years alone, several genes that potentially are involved in the decision making mechanism of cell maturation going from Inner Mass Cell (IMC) all the way to somatic cells have been discovered and widely known by now (\citealp{Graf09}). While this has enable us to study cell processes more thoroughly, the deterministic population-averaged nature of cell dynamics was becoming less and less apparent while the stochastic nature of single cell dynamics was becoming dominating as the analysis went down onto single cell resolution (\citealp{Elowitz02}). Hence our motivation to apply inference methods that are capable to infer dynamics of the systems that are heavily influenced by non-deterministic factors.
+The advances in gene expression measurement techniques, coupled with equally rapid advances in single cell analytics, have allowed the more recent high resolution single cell analysis of cell dynamics \citep{Feigelman16, Hoppe16}. This has enabled us, for example, to look deeper into the dynamics of stem cell maturation. In recent years alone, several genes that potentially are involved in the decision making mechanism of cell maturation going from Inner Mass Cell (IMC) all the way to somatic cells have been discovered and widely known by now \citep{Graf09}. While this has enable us to study cell processes more thoroughly, the deterministic population-averaged nature of cell dynamics was becoming less and less apparent while the stochastic nature of single cell dynamics was becoming dominating as the analysis went down onto single cell resolution \citep{Elowitz02}. Hence our motivation to apply inference methods that are capable to infer dynamics of the systems that are heavily influenced by non-deterministic factors.
 
 For this project we use particle filtering to learn more about this dynamics. We apply this technique on our time-dependent expression data of single cells containing concentration of both transcription factors. The approach of the experiment would be further described in the next section followed by the theoretical aspects of the particle filtering and other methods used in this project.
 
-In this paper we focus on the maturation lines of hematopoietic stem cells (\citealp{Orkin08}). The lines start with Long Term Hematopoietic Stem Cells (LT-HSC), which is progenitor of all blood cells. During its life, LT-HSC could either divide into two LT-HSC or turn into Short Term Hematopoietic Stem Cell (ST-HSC). SH-HSC will then undergo a transition process into either Common Myeloid Progenitor (CMP) or Common Lymphoid Progenitor (CLP). As the names suggest, both cells are the ancestor of all myeloid cells and lymphocites, respectively. Each would then further maturate into their respective intermediate cells and eventually the mature somatic cells (Red Blood Cells, Megakaryocytes, Mast Cells, Eosinophils, Neutrophils and Macrophages from CMP and B and T Lymphocytes from CLP; see Figure \ref{fig:01}).
+In this paper we focus on the maturation lines of hematopoietic stem cells \citep{Orkin08}. The lines start with Long Term Hematopoietic Stem Cells (LT-HSC), which is progenitor of all blood cells. During its life, LT-HSC could either divide into two LT-HSC or turn into Short Term Hematopoietic Stem Cell (ST-HSC). SH-HSC will then undergo a transition process into either Common Myeloid Progenitor (CMP) or Common Lymphoid Progenitor (CLP). As the names suggest, both cells are the ancestor of all myeloid cells and lymphocites, respectively. Each would then further maturate into their respective intermediate cells and eventually the mature somatic cells (Red Blood Cells, Megakaryocytes, Mast Cells, Eosinophils, Neutrophils and Macrophages from CMP and B and T Lymphocytes from CLP; see Figure \ref{fig:01}).
 
-The decision process of CMP transitioning into either MEP and GMP stands in focus of our project. Two transcription factors, \texttt{Pu.1}and \texttt{Gata.1} are thought to influence the decision process (\citealp{Graf09}). Moreover, both transcription factors are known to inhibit each other. It is thought that the whole cross inhibition dynamics between the two has an impact on the fate of Common Myeloid Progenitor. This dual-agent dynamics is thought to behave in a way that is self-fulfilling. That is, a slight change in concentration of transcription factors favoring one state over another will have stupendous impact on cell fate decision.
+The decision process of CMP transitioning into either MEP and GMP stands in focus of our project. Two transcription factors, \texttt{Pu.1}and \texttt{Gata.1} are thought to influence the decision process \citep{Graf09}. Moreover, both transcription factors are known to inhibit each other. It is thought that the whole cross inhibition dynamics between the two has an impact on the fate of Common Myeloid Progenitor. This dual-agent dynamics is thought to behave in a way that is self-fulfilling. That is, a slight change in concentration of transcription factors favoring one state over another will have stupendous impact on cell fate decision \citep{Filipczyk15}.
 
 \begin{figure}[h]
 \includegraphics[width=8cm]{figures/homatopoietic_focus}
-\caption{Maturation cascade of intermediate Common Myeloid Progenitor (CMP) to Megakaryocyte-Eerythroid Progenitor (MEP) and Granulocyte/Macrophage Progenitor (GMP). MEP would then maturate into somatic Red Blood Cells and Megakaryocites while GMP would undergo maturation into Granulocytes and Monocyptes. For each process there are known factors which are known to interact antagonistically on maturation decision. Our CMP to MEP and GMP decision stands on the top of the figure with two transcription factors of interest, \texttt{Pu.1} and \texttt{Gata.1} interact atagonistically. Figure taken from (\citealp{Graf09}).}\label{fig:01}
+\caption{Maturation cascade of intermediate Common Myeloid Progenitor (CMP) to Megakaryocyte-Eerythroid Progenitor (MEP) and Granulocyte/Macrophage Progenitor (GMP). MEP would then maturate into somatic Red Blood Cells and Megakaryocites while GMP would undergo maturation into Granulocytes and Monocyptes. For each process there are known factors which are known to interact antagonistically on maturation decision. Our CMP to MEP and GMP decision stands on the top of the figure with two transcription factors of interest, \texttt{Pu.1} and \texttt{Gata.1} interact atagonistically. Figure taken from \citealp{Graf09}.}\label{fig:01}
 \end{figure}
 
 \section{Approach}
@@ -57,11 +57,11 @@ For the single cell dynamic analysis to be possible, we were interested in gaini
 
 \subsection{Experimental Setting}
 
-The data for the experiment were taken from \citealp{Hoppe16}. The expressed protein of interests \texttt{Pu.1} and \texttt{Gata.1} were tagged with distinct fluorescence proteins \texttt{eYFP} and \texttt{mCherry} respectively. Time-wise expression levels were then measured based on the intensity of aforementioned florescence proteins.
+The data for the experiment were taken from Hoppe {\it et~al}, 2016 \citep{Hoppe16}. The expressed protein of interests \texttt{Pu.1} and \texttt{Gata.1} were tagged with distinct fluorescence proteins \texttt{eYFP} and \texttt{mCherry} respectively. Time-wise expression levels were then measured based on the intensity of aforementioned florescence proteins.
 
 Time-lapse imaging was performed at 37 $^{\circ}$C in fibronectin coated channel slides provided by Takara Bio. The light source for the experiment was a HXP 120 from Zeiss. 46HE and 43HE, both provided by Zeiss, were used to detect eYFP and mCherry fluorescence coming from the cells at exposure times between 400-1,500 ms using an AxioCam HRm from Zeiss. Bright field pictures were taken every 60-120 s while fluorescent pictures used for the measuring \texttt{PU.1-eYFP} and \texttt{GATA1-mCherry} were acquired every 30 min. Pictures used for analysis were saved in lossless TIF or PNG format. Single-cell tracking and image quantification were performed using self-written software as described
 
-Figure \ref{fig:02} shows how the dataset from similarly conducted experiment taken from (\citealp{Feigelman16}) visually look like.
+Figure \ref{fig:02} shows how the dataset from similarly conducted experiment taken from Feigelman, 2016 \citep{Feigelman16} visually look like.
 
 \begin{figure}[h]
 \includegraphics[width=8cm]{figures/cell-generations.png}
@@ -74,9 +74,13 @@ We utilize particle filtering to learn the dynamics of maturation of Common Myel
 
 \subsection{Particle Filtering}
 
+Particle filtering, which in several more recent literature is also known as \textbf{Sequential Monte Carlo} (SMC) \citep{Doucet01, Liu98}), is a class of methods generally used to solve the filtering problem. Classically, filtering problem is the problem of identifying best estimate of some system given noisy and incomplete input -- hence the word filter \citep{DelMoral96}. As the alternative name implies, it is a set of methods that run Monte Carlo sequentially interrupted by inference phase. It consists mainly of two phase steps, \textbf{prediction-updating} and \textbf{mutation-selection}, that are done sequentially and repetitively. In the first phase, the prediction-updating done updates the conditional probability of underlying assumption -- generally referred to as \textbf{posterior distribution} -- of a system given the previous simulation. Later on, a simulation (mutation) is done on given underlying assumption and simulations best fit the data would then be selected to update the underlying assumption in the next prediction-updating step \citep{DelMoral12}.
+
+As the name also implies, particle filtering utilizes the use of particle as a unit of sampled parameter from underlying posterior distribution.
+
 \subsubsection{Particle}
 
-We use particle filtering in our simulation. Particle filtering is a family of methods that utilize the concept of \textit{particle}. A particle $\mathcal{K}$ is defined as a triple of trajectory $X$, parameter set $\theta$ and assumed model $\mathcal{M}$,
+A particle $\mathcal{K}$ is defined as a triple of trajectory $X$, parameter set $\theta$ and assumed model $\mathcal{M}$,
 
 \begin{equation}
 \mathcal{K} := (X, \theta, \mathcal{M})\label{eq:01}
@@ -189,7 +193,7 @@ The visualization of the whole particle filtering process could be seen in Figur
 
 \begin{figure}[h]
 \includegraphics[width=8cm]{figures/particle_filtering.png}
-\caption{Visualization of particle filtering. (A): The particle filter requires a series of observation $\mathcal{D} = (\mathcal{D}_0, \mathcal{D}_1, \cdots \mathcal{D}_N)$ (top) and a prior distribution for model parameters $\pi(\theta)$ (bottom) as input. (B): Particles are initialized by sampling initial states $X(K)$ for each particle $K$. Parameters $\Theta$ are sampled from the prior distribution $\pi(\theta)$. (C): The trajectories are resampled according to the likelihood $w_0^{(k)} = P(D_0|X_0(k))$ and propagated to the next time step using stochastic simulations to generate new states $X_1^{(k)}$ at timepoint $t_1$. Model parameters for each latent trajectory are resampled from the conditional distribution $P(\theta|X^{(k)}_{[t0,t1]})$. (D): At each iteration, the weights are recomputed and the particles are resampled. Resampled particles are propagated to the next timepoint and the parameters are resampled conditional on the resampled latent trajectories. Over time the posterior parameter distribution converges to the true value. Figure taken from (\citealp{Feigelman16})}  \label{fig:03}
+\caption{Visualization of particle filtering. (A): The particle filter requires a series of observation $\mathcal{D} = (\mathcal{D}_0, \mathcal{D}_1, \cdots \mathcal{D}_N)$ (top) and a prior distribution for model parameters $\pi(\theta)$ (bottom) as input. (B): Particles are initialized by sampling initial states $X(K)$ for each particle $K$. Parameters $\Theta$ are sampled from the prior distribution $\pi(\theta)$. (C): The trajectories are resampled according to the likelihood $w_0^{(k)} = P(D_0|X_0(k))$ and propagated to the next time step using stochastic simulations to generate new states $X_1^{(k)}$ at timepoint $t_1$. Model parameters for each latent trajectory are resampled from the conditional distribution $P(\theta|X^{(k)}_{[t0,t1]})$. (D): At each iteration, the weights are recomputed and the particles are resampled. Resampled particles are propagated to the next timepoint and the parameters are resampled conditional on the resampled latent trajectories. Over time the posterior parameter distribution converges to the true value. Figure taken from Feigelman, 2016 \citealp{Feigelman16}}  \label{fig:03}
 \end{figure}
 
 \vspace*{-6pt}
@@ -434,20 +438,32 @@ We acknowledge the fact that the project and corresponding projects this project
 \bibitem[Feigelman, 2016]{Feigelman16}
 Feigelman, J. (2016). "Stochastic and deterministic methods for the analysis of Nanog dynamics in mouse embryonic stem cells." PhD Thesis, Technische Universit\"at M\"unchen, Munich, Germany.\vspace*{-2pt}
 
+\bibitem[Hoppe {\it et~al}, 2016]{Hoppe16}
+Hoppe, P.S., Schwarzfischer, M., Loeffler, D.,  Kokkaliaris, K.D., Hilsenbeck, O., Mortz, N., ... \& Etzrodt, M. (2016). Early myeloid lineage choice is not initiated by random PU.1 to GATA1 protein ratios. \textit{Nature}, \textbf{535(7611)}, 299-302.
+
 \bibitem[Graf \& Enver, 2009]{Graf09}
 Graf, T., \& Enver, T. (2009). Forcing cells to change lineages. \textit{Nature}, \textbf{462(7273)}, 587-594.
 
-\bibitem[Filipczyk {\it et~al}, 2015]{Filipczyk15}
-Filipczyk, A., Marr, C., Hastreiter, S., Feigelman, J., Schwarzfischer, M., Hoppe, P. S., ... \& Hilsenbeck, O. (2015). Network plasticity of pluripotency transcription factors in embryonic stem cells. \textit{Nature cell biology.}
+\bibitem[Elowitz {\it et~al}, 2016]{Elowitz02}
+Elowitz, M. B., Levine, A. J., Siggia, E. D., \& Swain, P. S. (2002). Stochastic gene expression in a single cell. \textit{Science}, \textbf{297(5584)}, 1183-1186.
 
 \bibitem[Orkin {\it et~al}, 2008]{Orkin08}
 Orkin, S. H., \& Zon, L. I. (2008). Hematopoiesis: an evolving paradigm for stem cell biology. \textit{Cell}, \textbf{132(4)}, 631-644.
 
-\bibitem[Hoppe {\it et~al}, 2016]{Hoppe16}
-Hoppe, P.S., Schwarzfischer, M., Loeffler, D.,  Kokkaliaris, K.D., Hilsenbeck, O., Mortz, N., ... \& Etzrodt, M. (2016). Early myeloid lineage choice is not initiated by random PU.1 to GATA1 protein ratios. \textit{Nature}, \textbf{535(7611)}, 299-302.
+\bibitem[Filipczyk {\it et~al}, 2015]{Filipczyk15}
+Filipczyk, A., Marr, C., Hastreiter, S., Feigelman, J., Schwarzfischer, M., Hoppe, P. S., ... \& Hilsenbeck, O. (2015). Network plasticity of pluripotency transcription factors in embryonic stem cells. \textit{Nature cell biology}.
 
-\bibitem[Elowitz {\it et~al}, 2016]{Elowitz02}
-Elowitz, M. B., Levine, A. J., Siggia, E. D., \& Swain, P. S. (2002). Stochastic gene expression in a single cell. \textit{Science}, \textbf{297(5584)}, 1183-1186.
+\bibitem[Doucet {\it et~al}, 1945]{Doucet01}
+Doucet, A., De Freitas, N., \& Gordon, N. (2001). An introduction to sequential Monte Carlo methods. In \textit{Sequential Monte Carlo methods in practice} (pp. 3-14). Springer New York.
+
+\bibitem[Liu and Chen, 1998]{Liu98}
+Liu, J. S., \& Chen, R. (1998). Sequential Monte Carlo methods for dynamic systems. \textit{Journal of the American statistical association}, 93(443), 1032-1044.
+
+\bibitem[Del Moral, 1996]{DelMoral96}
+Del Moral, P. (1996). Non-linear filtering: interacting particle resolution. \textit{Markov processes and related fields}, \textbf{2(4)}, 555-581.
+
+\bibitem[Del Moral, 2012]{DelMoral12}
+Del Moral, P., Doucet, A., \& Jasra, A. (2012). On adaptive resampling strategies for sequential Monte Carlo methods. \textit{Bernoulli}, \textbf{18(1)}, 252-278.
 
 \bibitem[Gillespie, 1977]{Gillespie77}
 Gillespie, D. T. (1977). Exact stochastic simulation of coupled chemical reactions. \textit{The journal of physical chemistry}, \textbf{81(25)}, 2340-2361.

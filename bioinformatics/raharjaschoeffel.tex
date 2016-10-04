@@ -28,7 +28,7 @@ $^{\text{\sf 3}}$Helmholtz Zentrum M\"unchen, Institute of Computational Biology
 
 \abstract{\textbf{Motivation:} 
 Unlike averaged effect commonly found in aggregate cells population data, the dynamics of single cell strongly exhibits the stochasticity of gene expression. These stochastically influenced dynamics in gene expression appears to convey more information about the background mechanism of gene expression routines than it would be otherwise understood through the study of population average.\\
-\textbf{Results:}In this paper we presented a particle filtering-based algorithm and framework that is capable of inferring parameters underlying the stochastic models from single cell expression data. This framework was then applied on time-lapsed microscopy data of two transcription factors (\texttt{Pu.1} and \texttt{Gata.1}) in murine blood stem cells. It is thought that both transcription factors play decisive roles in several stages of stem cell differentiation, especially the differentiation of hematopoetic stem cells. Our results provide several insights into the dynamics of blood stem cells maturation and specifically in the single cell environment, we managed to gain several valuable insights on the interaction dynamics between two transcription factors and the outcome of cell maturation. While doing so, we managed to developed highly flexible general purpose highly parallelized framework to model dynamical systems using particle filtering. The general framework software is now available as free software for anyone to use.\\
+\textbf{Results:}In this paper we presented a particle filtering-based algorithm and a framework that is capable of inferring parameters underlying the stochastic models from single cell expression data. This framework was then applied on time-lapsed microscopy data of two transcription factors (\texttt{Pu.1} and \texttt{Gata.1}) in murine blood stem cells. It is thought that both transcription factors play decisive roles in several stages of stem cell differentiation, especially the differentiation of hematopoetic stem cells. Our results provide several insights into the dynamics of blood stem cells maturation and specifically in the single cell environment. We managed to gain several valuable insights on the interaction dynamics between two transcription factors and the outcome of cell maturation. While doing so, we managed to developed highly flexible general purpose highly parallelized framework to model dynamical systems using particle filtering. The general framework software is now available as free software for anyone to use.\\
 \textbf{Availability:} The data are available upon request. A general framework for determining the parameters that best explain the data were published under open source license. The complete source code of the program is publicly accessible at \href{https://github.com/raharjaliu/PFInfer}{https://github.com/raharjaliu/PFInfer}.\\
 \textbf{Contact:} \href{pandu.raharja@tum.de}{pandu.raharja@tum.de}\\
 \textbf{Supplementary information:} Supplementary data are available at \textit{Bioinformatics}
@@ -38,18 +38,18 @@ online.}
 
 \section{Introduction}
 
-The advances in gene expression measurement techniques, coupled with equally rapid advances in single cell analytics, have allowed the more recent single cell analysis of cell dynamics. This has enabled us to look deeper into the dynamics of stem cell maturation. In recent years, several genes that potentially are involved in the decision making mechanism of cell maturation going from Inner Mass Cell (IMC) all the way to somatic cells have been discovered and widely known by now (\citealp{Graf09}).
+The advances in gene expression measurement techniques, coupled with equally rapid advances in single cell analytics, have allowed the more recent high resolution single cell analysis of cell dynamics \citealp{Hoppe16}. This has enabled us, for example, to look deeper into the dynamics of stem cell maturation. In recent years alone, several genes that potentially are involved in the decision making mechanism of cell maturation going from Inner Mass Cell (IMC) all the way to somatic cells have been discovered and widely known by now (\citealp{Graf09}). While this has enable us to study cell processes more thoroughly, the deterministic population-averaged nature of cell dynamics was becoming less and less apparent while the stochastic nature of single cell dynamics was becoming dominating as the analysis went down onto single cell resolution (\citealp{Elowitz02}). Hence our motivation to apply inference methods that are capable to infer dynamics of the systems that are heavily influenced by non-deterministic factors.
+
+For this project we use particle filtering to learn more about this dynamics. We apply this technique on our time-dependent expression data of single cells containing concentration of both transcription factors. The approach of the experiment would be further described in the next section followed by the theoretical aspects of the particle filtering and other methods used in this project.
 
 In this paper we focus on the maturation lines of hematopoietic stem cells (\citealp{Orkin08}). The lines start with Long Term Hematopoietic Stem Cells (LT-HSC), which is progenitor of all blood cells. During its life, LT-HSC could either divide into two LT-HSC or turn into Short Term Hematopoietic Stem Cell (ST-HSC). SH-HSC will then undergo a transition process into either Common Myeloid Progenitor (CMP) or Common Lymphoid Progenitor (CLP). As the names suggest, both cells are the ancestor of all myeloid cells and lymphocites, respectively. Each would then further maturate into their respective intermediate cells and eventually the mature somatic cells (Red Blood Cells, Megakaryocytes, Mast Cells, Eosinophils, Neutrophils and Macrophages from CMP and B and T Lymphocytes from CLP; see Figure \ref{fig:01}).
+
+The decision process of CMP transitioning into either MEP and GMP stands in focus of our project. Two transcription factors, \texttt{Pu.1}and \texttt{Gata.1} are thought to influence the decision process (\citealp{Graf09}). Moreover, both transcription factors are known to inhibit each other. It is thought that the whole cross inhibition dynamics between the two has an impact on the fate of Common Myeloid Progenitor. This dual-agent dynamics is thought to behave in a way that is self-fulfilling. That is, a slight change in concentration of transcription factors favoring one state over another will have stupendous impact on cell fate decision.
 
 \begin{figure}[h]
 \includegraphics[width=8cm]{figures/homatopoietic_focus}
 \caption{Maturation cascade of intermediate Common Myeloid Progenitor (CMP) to Megakaryocyte-Eerythroid Progenitor (MEP) and Granulocyte/Macrophage Progenitor (GMP). MEP would then maturate into somatic Red Blood Cells and Megakaryocites while GMP would undergo maturation into Granulocytes and Monocyptes. For each process there are known factors which are known to interact antagonistically on maturation decision. Our CMP to MEP and GMP decision stands on the top of the figure with two transcription factors of interest, \texttt{Pu.1} and \texttt{Gata.1} interact atagonistically. Figure taken from (\citealp{Graf09}).}\label{fig:01}
 \end{figure}
-
-The decision process of CMP transitioning into either MEP and GMP stands in focus of our project. Two transcription factors, \texttt{Pu.1}and \texttt{Gata.1} are thought to influence the decision process (\citealp{Graf09}). Moreover, both transcription factors are known to inhibit each other. It is thought that the whole cross inhibition dynamics between the two has an impact on the fate of Common Myeloid Progenitor. This dual-agent dynamics is thought to behave in a way that is self-fulfilling. That is, a slight change in concentration of transcription factors favoring one state over another will have stupendous impact on cell fate decision.
-
-For this project we use particle filtering to learn more about this dynamics. We apply this technique on our time-dependent expression data of single cells containing concentration of both transcription factors. The approach of the experiment would be further described in the next section followed by the theoretical aspects of the particle filtering and other methods used in this project.
 
 \section{Approach}
 
@@ -386,7 +386,7 @@ Parameter & Shape & Scale & Expected \\
 
 The model is based on the theory that a cross inhibition of the transcription factors \texttt{Pu.1} and \texttt{Gata.1} results in a switch like behavior of the transcription factors, which in turn governs the CMP lineage decision. Our results however cannot support this hypothesis as the fitted model parameters \texttt{KInhibitG} and \texttt{KInhibitP}, which represent the concentrations at which the production inhibition of \texttt{Gata.1} and \texttt{Pu.1} through the transcription factors is at half its maximum value, are significantly higher than the actual concentrations of \texttt{Pu.1} and \texttt{Gata.1} present in the time series data. This suggests that almost no inhibitory effect is apparent in the experiment. Furthermore the high similarity between both the production and degradation ratios of the transcription factors cannot account for uneven outcome of lineage decision via stochastic process.
 
-\vspace*{-6pt}
+\vspace*{-12pt}
 
 \section{Conclusion}
 
@@ -412,7 +412,7 @@ In the course of this project we managed to implement the Particle Filter Algori
 
 We would like to express our gratitude to Werner Mewes, Fabian Theis, Jan Quell and Anna Dieckman for facilitating the project. We would also like to thanks Philipp S. Hoppe, Michael Schwarzfischer, Dirk Loeffler, Konstantinos D. Kokkaliaris, Oliver Hilsenbeck, Nadine Moritz, Max Endele, Adam Filipczyk, Adriana Gambardella, Nouraiz Ahmed, Martin Etzrodt, Daniel L. Coutu, Michael A. Rieger, Bernhard Schauberger, Ingo Burtscher, Olga Ermakova, Antje B\"urger, Heiko Lickert, Claus Nerlov and Timm Schroder who agreed to provide us with the experiment data, without which we wouldn't be able to test our framework and models.
 
-\vspace*{-12pt}
+\vspace*{-18pt}
 
 \section*{Funding}
 
@@ -446,7 +446,8 @@ Orkin, S. H., \& Zon, L. I. (2008). Hematopoiesis: an evolving paradigm for stem
 \bibitem[Hoppe {\it et~al}, 2016]{Hoppe16}
 Hoppe, P.S., Schwarzfischer, M., Loeffler, D.,  Kokkaliaris, K.D., Hilsenbeck, O., Mortz, N., ... \& Etzrodt, M. (2016). Early myeloid lineage choice is not initiated by random PU.1 to GATA1 protein ratios. \textit{Nature}, \textbf{535(7611)}, 299-302.
 
-Orkin, S. H., \& Zon, L. I. (2008). Hematopoiesis: an evolving paradigm for stem cell biology. \textit{Cell}, \textbf{132(4)}, 631-644.
+\bibitem[Elowitz {\it et~al}, 2016]{Elowitz02}
+Elowitz, M. B., Levine, A. J., Siggia, E. D., \& Swain, P. S. (2002). Stochastic gene expression in a single cell. \textit{Science}, \textbf{297(5584)}, 1183-1186.
 
 \bibitem[Gillespie, 1977]{Gillespie77}
 Gillespie, D. T. (1977). Exact stochastic simulation of coupled chemical reactions. \textit{The journal of physical chemistry}, \textbf{81(25)}, 2340-2361.

@@ -5,7 +5,7 @@
 \usepackage{tikz}
 \usetikzlibrary{calc}
 
-\access{Advance Access Publication Date: Day Month Year}
+\access{Advance Access Publication Date: 23 Oct 2016}
 \appnotes{Manuscript Category}
 
 \begin{document}
@@ -40,7 +40,7 @@ online.}
 
 The advances in gene expression measurement techniques, coupled with equally rapid advances in single cell analytics, have allowed the more recent high resolution single cell analysis of cell dynamics \citep{Feigelman16, Hoppe16}. This has enabled us, for example, to look deeper into the dynamics of stem cell maturation. In recent years alone, several genes that potentially are involved in the decision making mechanism of cell maturation going from Inner Mass Cell (IMC) all the way to somatic cells have been discovered and widely known by now \citep{Graf09}. While this has enable us to study cell processes more thoroughly, the deterministic population-averaged nature of cell dynamics was becoming less and less apparent while the stochastic nature of single cell dynamics was becoming dominating as the analysis went down onto single cell resolution \citep{Elowitz02}. Hence our motivation to apply inference methods that are capable to infer dynamics of the systems that are heavily influenced by non-deterministic factors.
 
-For this project we use particle filtering to learn more about this dynamics. We apply this technique on our time-dependent expression data of single cells containing concentration of both transcription factors. The approach of the experiment would be further described in the next section followed by the theoretical aspects of the particle filtering and other methods used in this project.
+For this project we use particle filtering to learn more about aforementioned dynamics. We apply this technique on our time-dependent expression data of single cells containing concentration of both transcription factors. The approach of the experiment would be further described in the next section followed by the theoretical aspects of the particle filtering and other methods used in this project.
 
 In this paper we focus on the maturation lines of hematopoietic stem cells \citep{Orkin08}. The lines start with Long Term Hematopoietic Stem Cells (LT-HSC), which is progenitor of all blood cells. During its life, LT-HSC could either divide into two LT-HSC or turn into Short Term Hematopoietic Stem Cell (ST-HSC). SH-HSC will then undergo a transition process into either Common Myeloid Progenitor (CMP) or Common Lymphoid Progenitor (CLP). As the names suggest, both cells are the ancestor of all myeloid cells and lymphocites, respectively. Each would then further maturate into their respective intermediate cells and eventually the mature somatic cells (Red Blood Cells, Megakaryocytes, Mast Cells, Eosinophils, Neutrophils and Macrophages from CMP and B and T Lymphocytes from CLP; see Figure \ref{fig:01}).
 
@@ -76,7 +76,7 @@ We utilize particle filtering to learn the dynamics of maturation of Common Myel
 
 Particle filtering, which in several more recent literature is also known as \textbf{Sequential Monte Carlo} (SMC) \citep{Doucet01, Liu98}), is a class of methods generally used to solve the filtering problem. Classically, filtering problem is the problem of identifying best estimate of some system given noisy and incomplete input -- hence the word filter \citep{DelMoral96}. As the alternative name implies, it is a set of methods that run Monte Carlo sequentially interrupted by inference phase. It consists mainly of two phase steps, \textbf{prediction-updating} and \textbf{mutation-selection}, that are done sequentially and repetitively. In the first phase, the prediction-updating done updates the conditional probability of underlying assumption -- generally referred to as \textbf{posterior distribution} -- of a system given the previous simulation. Later on, a simulation (mutation) is done on given underlying assumption and simulations best fit the data would then be selected to update the underlying assumption in the next prediction-updating step \citep{DelMoral12}.
 
-As the name also implies, particle filtering utilizes the use of particle as a unit of sampled parameter from underlying posterior distribution.
+As the name also implies, particle filtering utilizes the use of particle. In the next part we will dive deep into the theory of particle filtering. First, we will define what a particle is. This is then followed by definition of Posterior, Parameters and Prior. Finally the section will be closed by short review of other methods that also tried to stochastically infer parameters on time-lapsed fluorescent single cell data.
 
 \subsubsection{Particle}
 
@@ -100,13 +100,13 @@ Our posterior describes the probability of having the trajectory $X$ and paramet
 P(X, \theta | \mathcal{D})\label{eq:03}
 \end{equation}
 
-We could understand this as the probability of having our simulation return a given set of values \textit{and} having the parameter set $\theta$ given that we previously observed the experimental data $\mathcal{D}$. Using Bayes' Theorem we could further expand our posterior into an update rule,
+This is understood as the probability of having our simulation return a given set of values \textit{and} having the parameter set $\theta$ given that we previously observed the experimental data $\mathcal{D}$. Using Bayes' Theorem we could further expand our posterior into an update rule,
 
 \begin{equation}
 P(X, \theta | \mathcal{D}) = \frac{P(\mathcal{D} | X, \theta)  P(X, \theta)}{P(\mathcal{D})}\label{eq:04}
 \end{equation}
 
-In our simulation we know that, to compute prior $P(\mathcal{D} | X, \theta)$, only knowledge about the trajectory of the simulation is needed. Hence, we could simplify our prior,
+In the simulation it is well known that, to compute prior $P(\mathcal{D} | X, \theta)$, only knowledge about the trajectory of the simulation is needed \citep{Feigelman16}. Hence, the prior could be simplified as,
 
 \begin{equation}
 P(\mathcal{D} | X, \theta) = P(\mathcal{D} | X)\label{eq:05}
@@ -154,6 +154,11 @@ Specifically for this simulation, we assume our prior to be Gamma distributed wi
 
 We used Gamma distribution as our prior due to the fact that a conjugate prior of a Gamma distributed random variable is also Gamma distributed.
 
+\subsubsection{Comparison with other methods}
+
+There are several methods that infer stochastic processes. Wilkinson -- and later on, Golightly and Wilkinson --  inferred stochastic differential equation (SDE) kinetic model of bacterial gene regulation using likelihood-free Markov Chain Monte Carlo (MCMC) on florescence data \citep{Wilkinson10, GolightlyWilkinson10}. Gonzales \textit{et al} did two stochastic inference methods, Mixed Effects (ME) and the Chemical Master Equation (CME), on time-lapsed single-cell data. The paper also tested the method by inferring previously known HOG pathway in yeast \textit{Saccharomyces cerevisiae} \citep{Gonzales13}. Koromowski \textit{et al} developed Bayesian framework performed using Markov Chain Monte Carlo (MCMC) and linear noise approximation to calibrate models on fluorescent experiment data \citep{Komorowski09}.
+
+
 \subsection{Simulation Process}
 
 The simulation is run in roughly following high level steps:
@@ -185,7 +190,7 @@ w_i^k = P(D_i | X_i^k) = \mathcal{N}(\mathcal{D}_i | X_i^k)\label{eq:12}
 
 \end{enumerate}
 
-\item Model comparison. This could be done by measure such as AIC, BIC, Bayes Factor etc.
+\item Model comparison. This could be done by utilizing measures such as Akaike Information Criterion, Bayesian Information Criterion and Bayes Factor \citep{PosadaBuckley14, Bozdogan87}.
 
 \end{enumerate}
 
@@ -432,6 +437,7 @@ We acknowledge the fact that the project and corresponding projects this project
 %
 %\bibliography{Document}
 
+\vspace*{15pt}
 
 \begin{thebibliography}{}
 
@@ -492,6 +498,23 @@ Haseltine, E. L., \& Rawlings, J. B. (2005). On the origins of approximations fo
 \bibitem[Sherlock {\it et~al}., 2014]{Sherlock14}
 Sherlock, C., Golightly, A., \& Gillespie, C. S. (2014). Bayesian inference for hybrid discrete-continuous stochastic kinetic models. \textit{Inverse Problems}, \textbf{30(11)}, 114005.
 
+\bibitem[Posada and Buckley, 2014]{PosadaBuckley14}
+Posada, D., \& Buckley, T. R. (2004). Model selection and model averaging in phylogenetics: advantages of Akaike information criterion and Bayesian approaches over likelihood ratio tests. \textit{Systematic biology}, \textbf{53(5)}, 793-808.
+
+\bibitem[Bozdogan, 1987]{Bozdogan87}
+Bozdogan, H. (1987). Model selection and Akaike's information criterion (AIC): The general theory and its analytical extensions. \textit{Psychometrika}, \textbf{52(3)}, 345-370.
+
+\bibitem[Wilkinson, 2010]{Wilkinson10}
+Wilkinson, D. J. (2010). Parameter inference for stochastic kinetic models of bacterial gene regulation: a Bayesian approach to systems biology. In \textit{Proceedings of 9th Valencia International Meeting on Bayesian Statistics}. Oxford University Press (pp. 679-705).
+
+\bibitem[Golightly and Wilkinson, 2010]{GolightlyWilkinson10}
+Golightly, A., \& Wilkinson, D. J. (2010). Markov chain Monte Carlo algorithms for SDE parameter estimation. \textit{Learning and Inference for Computational Systems Biology}, 253-276.
+
+\bibitem[Gonzales {\it et~al}., 2013]{Gonzales13}
+Gonzalez, A., Uhlendorf, J., Schaul, J., Cinquemani, E., Batt, G., \& Ferrari-Trecate, G. (2013). \textit{Identification of biological models from single-cell data: a comparison between mixed-effects and moment-based inference} (Doctoral dissertation, INRIA).
+
+\bibitem[Komorowski {\it et~al}., 2009]{Komorowski09}
+Komorowski, M., Finkenstädt, B., Harper, C. V., \& Rand, D. A. (2009). Bayesian inference of biochemical kinetic parameters using the linear noise approximation. \textit{BMC bioinformatics}, \textbf{10(1)}, 1.
 
 \end{thebibliography}
 \end{document}

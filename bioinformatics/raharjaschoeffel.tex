@@ -4,8 +4,6 @@
 \usepackage{gensymb}
 \usepackage{tikz}
 \usetikzlibrary{calc}
-\usepackage{epstopdf}
-
 
 \access{Advance Access Publication Date: 23 Oct 2016}
 \appnotes{Manuscript Category}
@@ -72,11 +70,11 @@ Figure \ref{fig:02} shows how the dataset from similarly conducted experiment ta
 
 \section{Models}
 
-We utilize particle filtering to learn the dynamics of maturation of Common Myeloid Progentior (CMP) cells. The definition of particle filtering can be seen in the subsection Particle Filtering. Simulation Process details how the simulation would be done and the probabilistic approaches used in it. The assumed model of the cell maturation is then described in the subsection Reaction Models. For comparison purpose, a framework for model comparison is also presented in subsection Models Comparison. This is especially helpful for comparing the default model described in Reaction Models and other possible alternative models.
+We utilize particle filtering to learn the dynamics of maturation of Common Myeloid Progentior (CMP) cells. The definition of particle filtering could be seen in the subsection \textbf{Particle Filtering}. \textbf{Simulation Process} details how the simulation would be done and the probabilistic approaches used in it. The assumed model of the cell maturation is then described in the subsection \textbf{Reaction Models}. For comparison purpose, a framework for model comparison is also presented in subsection \textbf{Models Comparison}. This is especially helpful for comparing the default model described in \textbf{Reaction Models} and other possible alternative models.
 
 \subsection{Particle Filtering}
 
-Particle filtering, which in several more recent literature is also known as Sequential Monte Carlo (SMC) \citep{Doucet01, Liu98}), is a class of methods generally used to solve the filtering problem. Classically, the filtering problem describes the problem of identifying the best estimate of some system given noisy and incomplete input -- hence the word filter \citep{DelMoral96}. As the alternative name implies, it is a set of methods that run Monte Carlo sequentially interrupted by inference phase. It consists mainly of two phase steps, prediction-updating and mutation-selection, that are done sequentially and repetitively. In the first phase, the prediction-updating done updates the conditional probability of underlying assumption -- generally referred to as posterior distribution -- of a system given the previous simulation. Later on, a simulation (mutation) is done on given underlying assumption and simulations best fit the data would then be selected to update the underlying assumption in the next prediction-updating step \citep{DelMoral12}.
+Particle filtering, which in several more recent literature is also known as \textbf{Sequential Monte Carlo} (SMC) \citep{Doucet01, Liu98}), is a class of methods generally used to solve the filtering problem. Classically, filtering problem is the problem of identifying best estimate of some system given noisy and incomplete input -- hence the word filter \citep{DelMoral96}. As the alternative name implies, it is a set of methods that run Monte Carlo sequentially interrupted by inference phase. It consists mainly of two phase steps, \textbf{prediction-updating} and \textbf{mutation-selection}, that are done sequentially and repetitively. In the first phase, the prediction-updating done updates the conditional probability of underlying assumption -- generally referred to as \textbf{posterior distribution} -- of a system given the previous simulation. Later on, a simulation (mutation) is done on given underlying assumption and simulations best fit the data would then be selected to update the underlying assumption in the next prediction-updating step \citep{DelMoral12}.
 
 As the name also implies, particle filtering utilizes the use of particle. In the next part we will dive deep into the theory of particle filtering. First, we will define what a particle is. This is then followed by definition of Posterior, Parameters and Prior. Finally the section will be closed by short review of other methods that also tried to stochastically infer parameters on time-lapsed fluorescent single cell data.
 
@@ -211,7 +209,7 @@ As mentioned before, A particle $\mathcal{K}$ is defined as a 3-tuple of traject
 
 For initial time, a particle could be constructed by combining initial parameters, which were arbitrarily defined by a pre-defined prior, and initial trajectory value $X_0$. There are three ways to define the initial trajectory value. First is to take 0 as initial value. Second is to take the first measurement data $\mathcal{D}_0$. Third is to model initial data as normal distributed instances around $\mathcal{D}_0$, i.e. $X_0 \propto \mathcal{N}(\mathcal{D}_0)$. It is worth noting that the first strategy may not always be applicable.
 
-M particles would then be created and for each iteration of the simulation with each particle having it's weight calculated from previous iteration $w_{i - 1}^k$. In the next iteration, M particles are to be chosen. Note that this implies that a particle from a previous iteration could be chosen more than once. Corollarly, a particle may also not be chosen at all. The draw is done by first drawing a random $z \propto \mathcal{U}(0, 1)$. A particle $k_{ij}$ is chosen with j denoting the smallest index so that the sum of all weight of particles with index smaller than j is larger than z, i.e.
+M particles would then be created and for each iteration of the simulation with each particle having weight which calculated from previous iteration $w_{i - 1}^k$. In the next iteration, M particles are to be chosen. Note that this implies that a particle from previous iteration could be chosen more than once. Corollarly, a particle from previous iteration may also not be chosen at all. The draw is done by first drawing a random $z \propto \mathcal{U}(0, 1)$. A particle $k_{ij}$ is chosen with j denoting the smallest index so that the sum of all weight of particles with index smaller than j is larger than z, i.e.
 
 \begin{equation}
 \sum_{l=1}^{j} w_{i - 1}^l \geq z\label{eq:14}
@@ -245,7 +243,7 @@ w_i^k = P(\mathcal{D}_i | X_i^k) = \mathcal{N}(\mathcal{D}_i | X_i^k)\label{eq:1
 
 \subsubsection{Parameters Update and Gamma Distribution}
 
-After each run, the parameters would then be updated using a Gamma Distribution. For $k$-th particle, the updated parameters at time $i$ are dependent on previous parameters given the trajectory of data in $[t_0, t_i]$,\\
+After each run, the parameters would then be updated using Gamma Distribution. For $k$-th particle, the updated parameters at time $i$ are dependent on previous parameters given the trajectory of data in $[t_0, t_i]$,\\
 
 \begin{equation}
 \Theta^k \propto P(\Theta | X_{[t_0, t_i]})\label{eq:17}
@@ -257,13 +255,13 @@ Applying Bayes' Rule on the probability and independent assumption, we get follo
 P(\Theta | X) = \frac{P(X | \Theta)}{P (X)} \prod_{i} P(\Theta_i)\label{eq:18}
 \end{equation}
 
-The gamma distribution is particularly favored for the update since a conjugate prior of Gamma Distribution is in turn gamma distributed,
+Gamma Distribution is particularly favored for the update since a conjugate prior of Gamma Distribution is in turn Gamma distributed,
 
 \begin{equation}
 P(\Theta | X) = \frac{P(X | \Theta)}{P (X)} \prod_{d=1}^{P} Ga(\Theta_d, \alpha_d, \beta_d)\label{eq:19}
 \end{equation}
 
-With $\alpha$ and $\beta$ referring to both the shape and rate of the distribution respectively. Owing to this property of the conjugate prior, a simplified update rule for each gamma distribution can be defined,
+With $\alpha$ and $\beta$ referring to both the shape and rate of the distribution respectively. Owing to the fact that conjugate prior of Gamma Distribution is also Gamma distributed, this could be then further simplified as an update rule of the Gamma distribution,
 
 \begin{equation}
 P(\Theta | X) = \frac{P(X | \Theta)}{P (X)} \prod_{d=1}^{P} Ga(\Theta_d, \alpha_d + r_d, \beta_d + Gd)\label{eq:20}
@@ -321,17 +319,15 @@ The propensity $a$ of decay reactions $k_3$ and $k_4$ roughly follows the mass a
 a_l = k_l \cdot A {;} \; l \in [3, 4]\label{eq:23}
 \end{equation}
 
-For production reactions $k_1$ and $k_2$ we assume Michaelis-Menten inhibition kinetics that influences the production of the protein species. In this assumption, the presence of one species negativly affects the production rate of another. The propensity of the reactions are thus,
+For production reactions $k_1$ and $k_2$ we assume Michaelis-Menten inhibition kinetics that influences the production of the species. In this assumption, the inhibiting characteristics of a species on another species negatively influences the creation rate of the species it inhibits. The propensity of the reactions are thus,
 
 \begin{equation}
-a_1 = k_1 \cdot (1 - \frac{\texttt{GATA1}^{n}}{\texttt{GATA1}^{n} + K_{P1}^{n}})\label{eq:24}
+a_1 = k_1 \cdot \frac{\texttt{GATA1}^{-n}}{\texttt{GATA1}^{-n} + K_{P1}^{-n}}\label{eq:24}
 \end{equation}
 
 \begin{equation}
-a_2 = k_2 \cdot (1 - \frac{\texttt{Pu.1}^{n}}{\texttt{Pu.1}^{n} + K_{P2}^{n}})\label{eq:25}
+a_2 = k_2 \cdot \frac{\texttt{Pu.1}^{-n}}{\texttt{Pu.1}^{-n} + K_{P2}^{-n}}\label{eq:25}
 \end{equation}
-
-With $K_{P1}$ and $K_{P2}$ referring to the respective protein concentrations at which inhibiton trough \texttt{GATA1} or \texttt{Pu.1} is at half its maximum effect.
 
 \subsection{Models Comparison}
 
@@ -368,7 +364,7 @@ A distribution created upon repetitively sampling the fitted parameters from eac
 
 \begin{figure}[h]
 \includegraphics[width=8cm]{figures/kpp.pdf}
-\caption{An example fitted parameter distribution. This example shows the sampled distribution of fitted parameter for expression reaction of \texttt{Pu.1}, \texttt{$k_1$}. }  \label{fig:04}
+\caption{An example fitted parameter distribution. This example shows the sampled distribution of fitted parameter for expression reaction of \texttt{Pu.1}, \texttt{Kpp}. }  \label{fig:04}
 \end{figure}
 
 \begin{table}[h]
@@ -377,12 +373,12 @@ A distribution created upon repetitively sampling the fitted parameters from eac
 \hline
 Parameter & Shape & Scale & Expected \\
 \hline
-\texttt{$k_1$} & 0.9910 & 19.5851 & 19.4089 \\
-\texttt{$k_2$} & 1.0695 & 18.2771 & 19.4570 \\
-\texttt{$k_3$} & 1.0366 & 0.4757 & 0.4931 \\
-\texttt{$k_4$} & 1.0520 & 0.4837 & 0.5089 \\
-\texttt{$K_{P1}$} & 1.0069 & 20.3016 & 20.4407 \\
-\texttt{$K_{P2}$} & 0.9422 & 21.4545 & 20.2145 \\
+\texttt{Kpg} & 1.0695 & 18.2771 & 19.4570 \\
+\texttt{Kpp} & 0.9910 & 19.5851 & 19.4089 \\
+\texttt{Kdg} & 1.0520 & 0.4837 & 0.5089 \\
+\texttt{Kdp} & 1.0366 & 0.4757 & 0.4931 \\
+\texttt{KInhibitG} & 0.9422 & 21.4545 & 20.2145 \\
+\texttt{KInhibitP} & 1.0069 & 20.3016 & 20.4407 \\
 \hline
 \end{tabular}
 
@@ -397,13 +393,13 @@ Parameter & Shape & Scale & Expected \\
 
 \section{Discussion}
 
-The model is based on the theory that a cross inhibition of the transcription factors \texttt{$K_{P1}$} and \texttt{$K_{P2}$} results in a switch like behavior of the transcription factors, which in turn governs the CMP lineage decision. Our results however cannot support this hypothesis as the fitted model parameters \texttt{{$K_{P1}$}} and \texttt{{$K_{P2}$}}, which represent the concentrations at which the production inhibition of \texttt{Gata1} and \texttt{Pu.1} through the transcription factors is at half its maximum value, are significantly higher than the actual concentrations of \texttt{Pu.1} and \texttt{Gata.1} present in the time series data. This suggests that almost no inhibitory effect is apparent in the experiment. Furthermore the high similarity between both the production and degradation ratios of the transcription factors cannot account for uneven outcome of lineage decision via stochastic process.
+The model is based on the theory that a cross inhibition of the transcription factors \texttt{Pu.1} and \texttt{Gata.1} results in a switch like behavior of the transcription factors, which in turn governs the CMP lineage decision. Our results however cannot support this hypothesis as the fitted model parameters \texttt{KInhibitG} and \texttt{KInhibitP}, which represent the concentrations at which the production inhibition of \texttt{Gata.1} and \texttt{Pu.1} through the transcription factors is at half its maximum value, are significantly higher than the actual concentrations of \texttt{Pu.1} and \texttt{Gata.1} present in the time series data. This suggests that almost no inhibitory effect is apparent in the experiment. Furthermore the high similarity between both the production and degradation ratios of the transcription factors cannot account for uneven outcome of lineage decision via stochastic process.
 
 \vspace*{-12pt}
 
 \section{Conclusion}
 
-In the course of this project we managed to implement the Particle Filter Algorithm as a framework for the inference of model parameters through the use of time series data. The resulting fitted parameters did not support our initial hypothesis of a cross inhibition between \textit{Gata1} and \textit{Pu.1}. This finding was also confirmed by other publication which used the same data set claiming independence of early myeloid lineage choice with regards to the transcription factors \texttt{Pu.1} and \texttt{Gata.1} (\citealp{Hoppe16}). This highlights our framework's capability to convey underlying mechanics prior unknown to us. We also show that our framework can be used to compare model performance with regards to experimental data. This in turn hallmarks our framework potential as supporting tool for research scientists.
+In the course of this project we managed to implement the Particle Filter Algorithm as a framework for the inference of model parameters through the use of time series data. The resulting fitted parameters didn't support our initial hypothesis of a cross inhibition between \textit{Gata.1} and \textit{Pu.1}. This finding was also confirmed by other publication which used the same data set claiming independence of early myeloid lineage choice with regards to the transcription factors \texttt{Pu.1} and \texttt{Gata.1} (\citealp{Hoppe16}). This highlights our framework's capability to convey underlying mechanics prior unknown to us. We also show that our framework could be used both prior the experiment and post-experiment to elucidate scientists during their experiment routine. This in turn hallmarks our framework potential as supporting tool for research scientists.
 
 \vspace*{-6pt}
 
@@ -427,13 +423,10 @@ We would like to express our gratitude to Werner Mewes, Fabian Theis, Jan Quell 
 
 \vspace*{-18pt}
 
-
-\iffalse
 \section*{Funding}
 
 We acknowledge the fact that the project and corresponding projects this project is based on are, directly and undirectly, financed by several grants given to following institutes within the Helmholtz Zentrum M\"unchen: the Institute of Bioinformatics and Systems Biology, the Institute of Computational Biology, the Institute of Diabetes and Regeneration Research, the Institute of Development Genetics and the Research Unit Stem Cell Dynamics. Some grants might also be involved coming from following institutions: Department of Biosystems Science and Engineering at ETH Zurich, MRC Molecular Haematology Unit at University of Oxford, Institute di Biologia Cellulare e Neurobiologia at CNR, Beta Cell Biology at the Medical Faculty of the Technical University of Munich, Department of Mathematics at the Technical University of Munich and EMBL Mouse Biology Unit.\vspace*{-12pt}
-\fi
-	
+
 %\bibliographystyle{natbib}
 %\bibliographystyle{achemnat}
 %\bibliographystyle{plainnat}

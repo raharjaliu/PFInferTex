@@ -146,13 +146,13 @@ Our prior $\pi(\theta)$ could be expanded by assuming the independence of each p
 \pi(\theta) = \prod_{i=1}^{P} \pi(\theta_i)\label{eq:09}
 \end{equation}
 
-Specifically for this simulation, we assume our prior to be Gamma distributed with the parameters $\alpha$ and $\beta$,
+Specifically for this simulation, we assume our prior to be gamma distributed with the parameters $\alpha$ and $\beta$,
 
 \begin{equation}
 \pi(\theta) = \prod_{i=1}^{P} Ga(\theta_i, \alpha_i, \beta_i)\label{eq:10}
 \end{equation}
 
-We used Gamma distribution as our prior due to the fact that a conjugate prior of a Gamma distributed random variable is also Gamma distributed.
+We used gamma distribution as our prior due to the fact that a conjugate prior of a gamma distributed random variable is also gamma distributed.
 
 \subsubsection{Comparison with other methods}
 
@@ -243,7 +243,7 @@ w_i^k = P(\mathcal{D}_i | X_i^k) = \mathcal{N}(\mathcal{D}_i | X_i^k)\label{eq:1
 
 \subsubsection{Parameters Update and Gamma Distribution}
 
-After each run, the parameters would then be updated using Gamma Distribution. For $k$-th particle, the updated parameters at time $i$ are dependent on previous parameters given the trajectory of data in $[t_0, t_i]$,\\
+After each run, the parameters would then be updated using the underlying Gamma Distribution. For $k$-th particle, the updated parameters at time $i$ are dependent on previous parameters given the trajectory of data in $[t_0, t_i]$,\\
 
 \begin{equation}
 \Theta^k \propto P(\Theta | X_{[t_0, t_i]})\label{eq:17}
@@ -255,7 +255,7 @@ Applying Bayes' Rule on the probability and independent assumption, we get follo
 P(\Theta | X) = \frac{P(X | \Theta)}{P (X)} \prod_{i} P(\Theta_i)\label{eq:18}
 \end{equation}
 
-Gamma Distribution is particularly favored for the update since a conjugate prior of Gamma Distribution is in turn Gamma distributed,
+The Gamma Distribution is particularly favored for the update since a conjugate prior of Gamma Distribution is in turn Gamma distributed,
 
 \begin{equation}
 P(\Theta | X) = \frac{P(X | \Theta)}{P (X)} \prod_{d=1}^{P} Ga(\Theta_d, \alpha_d, \beta_d)\label{eq:19}
@@ -277,7 +277,7 @@ Here, $k_d$ and $a_{l}(X(S))$ refer to reaction rate of the d-th reaction and tr
 
 \subsection{Reaction Models}
 
-We assume following putative cross inhibition between genes \texttt{Pu.1} and \texttt{GATA1} playing roles in cell differentiation dynamics:
+We assume following putative cross inhibition between genes \texttt{Pu.1} and \texttt{Gata.1} playing roles in cell differentiation dynamics:
 
 \begin{center}
 \begin{tikzpicture}[node distance=2cm]
@@ -322,12 +322,14 @@ a_l = k_l \cdot A {;} \; l \in [3, 4]\label{eq:23}
 For production reactions $k_1$ and $k_2$ we assume Michaelis-Menten inhibition kinetics that influences the production of the species. In this assumption, the inhibiting characteristics of a species on another species negatively influences the creation rate of the species it inhibits. The propensity of the reactions are thus,
 
 \begin{equation}
-a_1 = k_1 \cdot \frac{\texttt{GATA1}^{-n}}{\texttt{GATA1}^{-n} + K_{P1}^{-n}}\label{eq:24}
+a_1 = k_1 \cdot (1 - \frac{\texttt{GATA1}^{n}}{\texttt{GATA1}^{n} + K_{P1}^{n}})\label{eq:24}
 \end{equation}
 
 \begin{equation}
-a_2 = k_2 \cdot \frac{\texttt{Pu.1}^{-n}}{\texttt{Pu.1}^{-n} + K_{P2}^{-n}}\label{eq:25}
+a_2 = k_2 \cdot (1 - \frac{\texttt{Pu.1}^{n}}{\texttt{Pu.1}^{n} + K_{P2}^{n}})\label{eq:25}
 \end{equation}
+
+With $K_{P1}$ and $K_{P2}$ referring to the respective protein concentrations at which inhibiton trough \texttt{GATA1} or \texttt{Pu.1} is at half its maximum effect.
 
 \subsection{Models Comparison}
 
@@ -357,14 +359,14 @@ B_{M1, M2} = \frac{P(\mathcal{D} | M_1)}{P(\mathcal{D} | M_2)}\label{eq:29}
 
 \section{Result}
 
-The particle filter algorithm was applied to a time series data set containing the cell lineage of a murine stem cell. Each edge in the time series tree was simulated using 50 Particles. For each of the 41 stem cells present at the end of the experiment 50 Particles were sample according to their weights. The parameters from each chosen Particle were combined resulting in gamma distribution for each of the 6 Parameters. These Gamma Distributions represent the described posterior (Equation \ref{eq:03}) and their expected value is the optimal fit for the model over the cell lineage tree contained in the time series data.
+The particle filter algorithm was applied to a time series data set containing the cell lineage of a murine stem cell. Each edge in the time series tree was simulated using 50 Particles. For each of the 41 stem cells present at the end of the experiment 50 Particles were sample according to their weights. The parameters from each chosen Particle were combined resulting in gamma distribution for each of the 6 Parameters. These gamma distributions represent the described posterior (Equation \ref{eq:03}) and their expected value is the optimal fit for the model over the cell lineage tree contained in the time series data.
 
-A distribution created upon repetitively sampling the fitted parameters from each cell would then in turn be Gamma distributed. This is of then in line with our assumption. An example of fitted parameter sampled from all cells could be seen in Figure \ref{fig:04}. Table \ref{tab:01} shows the fitted values for distribution sampled for all involved parameters in our simulation.
+A distribution created upon repetitively sampling the fitted parameters from each cell would then in turn be gamma distributed. This is of then in line with our assumption. An example of fitted parameter sampled from all cells could be seen in Figure \ref{fig:04}. Table \ref{tab:01} shows the fitted values for distribution sampled for all involved parameters in our simulation.
 
 
 \begin{figure}[h]
 \includegraphics[width=8cm]{figures/kpp.pdf}
-\caption{An example fitted parameter distribution. This example shows the sampled distribution of fitted parameter for expression reaction of \texttt{Pu.1}, \texttt{Kpp}. }  \label{fig:04}
+\caption{An example fitted parameter distribution. This example shows the sampled distribution of fitted parameter for expression reaction of \texttt{Pu.1}, \texttt{$k_1$}. }  \label{fig:04}
 \end{figure}
 
 \begin{table}[h]
@@ -373,18 +375,18 @@ A distribution created upon repetitively sampling the fitted parameters from eac
 \hline
 Parameter & Shape & Scale & Expected \\
 \hline
-\texttt{Kpg} & 1.0695 & 18.2771 & 19.4570 \\
-\texttt{Kpp} & 0.9910 & 19.5851 & 19.4089 \\
-\texttt{Kdg} & 1.0520 & 0.4837 & 0.5089 \\
-\texttt{Kdp} & 1.0366 & 0.4757 & 0.4931 \\
-\texttt{KInhibitG} & 0.9422 & 21.4545 & 20.2145 \\
-\texttt{KInhibitP} & 1.0069 & 20.3016 & 20.4407 \\
+\texttt{$k_1$} & 0.9910 & 19.5851 & 19.4089 \\
+\texttt{$k_2$} & 1.0695 & 18.2771 & 19.4570 \\
+\texttt{$k_3$} & 1.0366 & 0.4757 & 0.4931 \\
+\texttt{$k_4$} & 1.0520 & 0.4837 & 0.5089 \\
+\texttt{$K_{P1}$} & 1.0069 & 20.3016 & 20.4407 \\
+\texttt{$K_{P2}$} & 0.9422 & 21.4545 & 20.2145 \\
 \hline
 \end{tabular}
 
 \vspace*{5pt}
 
-\caption{The fitted shapes and scales of the underlying parameter disribution for all parameters involved in linear decision process. The values were fitted from the distribution of parameters sampled from all simulated particles. An example of such distribution could be seen in Figure \ref{fig:04}). In that example, the red line was the probability density function of the Gamma distribution underlying the parameter.}
+\caption{The fitted shapes and scales of the underlying parameter disribution for all parameters involved in linear decision process. The values were fitted from the distribution of parameters sampled from all simulated particles. An example of such distribution could be seen in Figure \ref{fig:04}). In that example, the red line was the probability density function of the gamma distribution underlying the parameter.}
 \end{center}
 \label{tab:01}
 \end{table}
@@ -393,13 +395,13 @@ Parameter & Shape & Scale & Expected \\
 
 \section{Discussion}
 
-The model is based on the theory that a cross inhibition of the transcription factors \texttt{Pu.1} and \texttt{Gata.1} results in a switch like behavior of the transcription factors, which in turn governs the CMP lineage decision. Our results however cannot support this hypothesis as the fitted model parameters \texttt{KInhibitG} and \texttt{KInhibitP}, which represent the concentrations at which the production inhibition of \texttt{Gata.1} and \texttt{Pu.1} through the transcription factors is at half its maximum value, are significantly higher than the actual concentrations of \texttt{Pu.1} and \texttt{Gata.1} present in the time series data. This suggests that almost no inhibitory effect is apparent in the experiment. Furthermore the high similarity between both the production and degradation ratios of the transcription factors cannot account for uneven outcome of lineage decision via stochastic process.
+The model is based on the theory that a cross inhibition of the transcription factors \texttt{$K_{P1}$} and \texttt{$K_{P2}$} results in a switch like behavior of the transcription factors, which in turn governs the CMP lineage decision. Our results however cannot support this hypothesis as the fitted model parameters \texttt{{$K_{P1}$}} and \texttt{{$K_{P2}$}}, which represent the concentrations at which the production inhibition of \texttt{Gata1} and \texttt{Pu.1} through the transcription factors is at half its maximum value, are significantly higher than the actual concentrations of \texttt{Pu.1} and \texttt{Gata.1} present in the time series data. This suggests that almost no inhibitory effect is apparent in the experiment. Furthermore the high similarity between both the production and degradation ratios of the transcription factors cannot account for uneven outcome of lineage decision via stochastic process.
 
 \vspace*{-12pt}
 
 \section{Conclusion}
 
-In the course of this project we managed to implement the Particle Filter Algorithm as a framework for the inference of model parameters through the use of time series data. The resulting fitted parameters didn't support our initial hypothesis of a cross inhibition between \textit{Gata.1} and \textit{Pu.1}. This finding was also confirmed by other publication which used the same data set claiming independence of early myeloid lineage choice with regards to the transcription factors \texttt{Pu.1} and \texttt{Gata.1} (\citealp{Hoppe16}). This highlights our framework's capability to convey underlying mechanics prior unknown to us. We also show that our framework could be used both prior the experiment and post-experiment to elucidate scientists during their experiment routine. This in turn hallmarks our framework potential as supporting tool for research scientists.
+In the course of this project we managed to implement the Particle Filter Algorithm as a framework for the inference of model parameters through the use of time series data. The resulting fitted parameters did not support our initial hypothesis of a cross inhibition between \textit{Gata1} and \textit{Pu.1}. This finding was also confirmed by other publication which used the same data set claiming independence of early myeloid lineage choice with regards to the transcription factors \texttt{Pu.1} and \texttt{Gata.1} (\citealp{Hoppe16}). This highlights our framework's capability to convey underlying mechanics prior unknown to us. We also show that our framework can be used to compare model performance with regards to experimental data. This in turn hallmarks our framework potential as supporting tool for research scientists.
 
 \vspace*{-6pt}
 

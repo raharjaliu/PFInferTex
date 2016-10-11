@@ -76,7 +76,7 @@ We utilize particle filtering to learn the dynamics of maturation of Common Myel
 
 Particle filtering, which in several more recent literature is also known as \textbf{Sequential Monte Carlo} (SMC) \citep{Doucet01, Liu98}), is a class of methods generally used to solve the filtering problem. Classically, filtering problem is the problem of identifying best estimate of some system given noisy and incomplete input -- hence the word filter \citep{DelMoral96}. As the alternative name implies, it is a set of methods that run Monte Carlo sequentially interrupted by inference phase. It consists mainly of two phase steps, \textbf{prediction-updating} and \textbf{mutation-selection}, that are done sequentially and repetitively. In the first phase, the prediction-updating done updates the conditional probability of underlying assumption -- generally referred to as \textbf{posterior distribution} -- of a system given the previous simulation. Later on, a simulation (mutation) is done on given underlying assumption and simulations best fit the data would then be selected to update the underlying assumption in the next prediction-updating step \citep{DelMoral12}.
 
-As the name also implies, particle filtering utilizes the use of particle. In the next part we will dive deep into the theory of particle filtering. First, we will define what a particle is. This is then followed by definition of Posterior, Parameters and Prior. Finally the section will be closed by short review of other methods that also tried to stochastically infer parameters on time-lapsed fluorescent single cell data.
+As the name also implies, particle filtering utilizes the use of particle, an abstract representation of combination of model, data and parameters. In the next part we will dive deep into the theory of particle filtering. First, we will define what a particle is. This is then followed by definition of Propensity, Posterior, Parameters and Prior. Finally the section will be closed by short review of other methods that also tried to stochastically infer parameters on time-lapsed fluorescent single cell data.
 
 \subsubsection{Particle}
 
@@ -93,6 +93,34 @@ X_i = f(X_{i - 1}, \mathcal{M}, \theta_{i - 1})\label{eq:02}
 \end{equation}
 
 \subsubsection{Propensity}
+
+As the name suggests, propensity is measure of a certain thing would be happening in a given time. In our model specifically, a propensity roughly corresponds to the chance of a reaction to happen in a given time,
+
+\begin{equation}
+a_i \propto P(R_k = r_i)
+\end{equation}
+
+Where $P(R_k = r_i)$ refers to the probability of reaction at time point k to be the -th reaction. For reactions $r_1, r_2, \cdots r_p$ there are propensities $a_1, a_2, \cdots a_p$ that are uniquely assigned to each reaction. The probability of a reaction $r_i$ to happen in a given time is thus the ratio between its propensity $a_i$ to the total sum of all propensities,
+
+\begin{equation}
+P(R_k = r_i) = \frac{a_i}{\sum_{j=0}^{p} a_i}
+\end{equation}
+
+In our model, two kinds of propensities were defined. For uninhibited reaction, i.e. a reaction in which no inhibiting effect from other species -- a term denoting any entity that is involved in a reaction network -- is assumed, the reaction specific propensity is defined as the parameter in the mass action law of chemical reaction:
+
+\begin{equation}
+a_i = k_i \label{eq:23}
+\end{equation}
+
+with $k_i$ referring to the reaction parameter of $r_i$.
+
+For reaction $r_i$ inhibited by a species $Y$, Michaelis-Menten inhibition kinetics is assumed to be the propensity of the reaction,
+
+\begin{equation}
+a_i = k_i \cdot (1 - \frac{X_i^{n}}{X_i^{n} + K_{Y}^{n}})\label{eq:24}
+\end{equation}
+
+where $k_i$, $X_i$ and $K_{Y}$ refer to reaction parameter of $r_i$, concentration of product $X$ in a given time and inhibiting coefficient of regulator $Y$ on $X$ respectively.
 
 \subsubsection{Posterior}
 

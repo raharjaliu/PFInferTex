@@ -5,6 +5,8 @@
 \usepackage{tikz}
 \usetikzlibrary{calc}
 
+\usepackage{epstopdf}
+
 \access{Advance Access Publication Date: 23 Oct 2016}
 \appnotes{Manuscript Category}
 
@@ -389,49 +391,106 @@ B_{M1, M2} = \frac{P(\mathcal{D} | M_1)}{P(\mathcal{D} | M_2)}\label{eq:29}
 
 \section{Result}
 
-The particle filter algorithm was applied to a time series data set containing the cell lineage of a murine stem cell. Each edge in the time series tree was simulated using 50 Particles. For each of the 41 stem cells present at the end of the experiment 50 Particles were sample according to their weights. The parameters from each chosen Particle were combined resulting in gamma distribution for each of the 6 Parameters. These gamma distributions represent the described posterior (Equation \ref{eq:03}) and their expected value is the optimal fit for the model over the cell lineage tree contained in the time series data.
-
-A distribution created upon repetitively sampling the fitted parameters from each cell would then in turn be gamma distributed. This is of then in line with our assumption. An example of fitted parameter sampled from all cells could be seen in Figure \ref{fig:04}. Table \ref{tab:01} shows the fitted values for distribution sampled for all involved parameters in our simulation.
-
-
-\begin{figure}[h]
-\includegraphics[width=8cm]{figures/kpp.pdf}
-\caption{An example fitted parameter distribution. This example shows the sampled distribution of fitted parameter for expression reaction of \texttt{Pu.1}, \texttt{$k_1$}. }  \label{fig:04}
-\end{figure}
+In order to assess the performance of parameters inference and model comparison via particle filtering we created a test time series data set. The reaction model decribed in 3.3 was used as basis to generate the set with the aforementioned SSA of Gillespie. As the model describes a bistable switch the test data needs to contain sufficient information regarding both dominance states as well as transition phases between the states. To achieve this the simulation was organised into a cell lineage tree, starting with the simulation of single cell, which would then split into two daugthers cell. These cells inherit the protein levels of their parent and continue their simulation independently. With enough split phases the resulting time series tree can accurately represent the spectrum of possible system configurations. For our data set we choose 5 split phases resulting in 32 trajectories at the end of simulation. After generation of the test data the particle filter was applied with a particle count of 1000 and replicated two times to investigate the consistency of the parameter inference.
 
 \begin{table}[h]
 \begin{center}
-\begin{tabular}{|l | c | c | c |}
+\begin{tabular}{l | c | c | c | c | c }
+Parameter & Simulation & Prior & Replicate 1 & Replicate 2 & Replicate 3 \\
 \hline
-Parameter & Shape & Scale & Expected \\
-\hline
-\texttt{$k_1$} & 0.9910 & 19.5851 & 19.4089 \\
-\texttt{$k_2$} & 1.0695 & 18.2771 & 19.4570 \\
-\texttt{$k_3$} & 1.0366 & 0.4757 & 0.4931 \\
-\texttt{$k_4$} & 1.0520 & 0.4837 & 0.5089 \\
-\texttt{$K_{P1}$} & 1.0069 & 20.3016 & 20.4407 \\
-\texttt{$K_{P2}$} & 0.9422 & 21.4545 & 20.2145 \\
-\hline
+\texttt{$k_1$} & 120 & 100 & 104.489 & 105.533 & 104.497\\
+\texttt{$k_2$} & 120 & 100 & 104.585 & 104.771 & 104.099\\
+\texttt{$k_3$} & 0.4 & 0.3 & 0.356 & 0.351 & 0.344\\
+\texttt{$k_4$} & 0.4 & 0.3 & 0.355 & 0.337 & 0.356\\
+\texttt{$K_{P1}$} & 170 & 190 & 189.141 & 189.114 & 189.13\\
+\texttt{$K_{P2}$} & 170 & 190 & 188.209 & 189.295 & 189.606\\
 \end{tabular}
 
-\vspace*{5pt}
-
-\caption{The fitted shapes and scales of the underlying parameter disribution for all parameters involved in linear decision process. The values were fitted from the distribution of parameters sampled from all simulated particles. An example of such distribution could be seen in Figure \ref{fig:04}). In that example, the red line was the probability density function of the gamma distribution underlying the parameter.}
-\end{center}
+\vspace*{7pt}
+\caption{Exact value of the parameters used in the simulation to generate the test data and expected value of the prior used for particle filtering. Replicates show the expected value of the posterior distributions for each particle filtering run on the test data set.}
 \label{tab:01}
+\end{center}
 \end{table}
+
+\begin{figure*}[h]
+\includegraphics[width=0.75\textwidth]{figures/test_results.pdf}
+\caption{Result of the particle filtering algorithm for each parameter of the reaction model on the test data set. The dashed lines indictated the optimal parameter values used in the data creation. The red lines show the prior distribution for the parameters used in the particle filtering. Replicate lines represent the posterior distribution of fitted paramters after particle filter run.}  \label{fig:04}
+\end{figure*}
 
 \vspace*{-12pt}
 
+Table \ref{tab:01} shows the results of the particle filtering test for each of the 6 paramters with the posterior distributions visualized in figure \ref{fig:04}. The posterior distribution of the paramters $k_3$ and $k_4$ used the degradation reactions of \texttt{Pu.1} and \texttt{Gata1} respectivly, show the most recognisable motion towards their optimal values while the parameters $k_1$ and $k_2$ responsible for the production reactions show only little movement. No significant fitting of the inhibition paramters $K_{P1}$ and $K_{P1}$ can be inferred though all replicates show minimal movement. The replicates of the particle filtering are highly consistent in their results with expected values of their posterior distributions being marginally different. Furthermore the paramters $k_3$ and $k_4$ show a similar transformation of their particluar priors towards the shape of the resulting posteriors.
+
+
+
+In order to investigate the capability of the particle filter for model comparsion a second model was created from the reaction model described in section 3.3. For this model the inhibitory kinetics of the production reactions were removed resulting in complete independence of protein levels between \texttt{Pu.1} and \texttt{Gata1}. The production parameters $k_1$ and $k_2$ were lowered from 120 to 90 to compensate for the removal of the inhibitory effect. Afterwards the particle filter algorithm was applied to test data set with 1000 particles for both the original reaction model with optimal paramters and the modified model without cross inhibiton. By tracking the particle weight of a particle trajectory at each given datapoint the particle filter can infer the likelihood for the Bayes Factors described in equation \ref{eq:29}. For ease of computation the weights were transformed to log probabilities with base 2, resulting in the following Bayes Factor:
+
+
+\begin{equation}
+B_{M1, M2} = \frac{P(\mathcal{D} | M_{inhibitory})}{P(\mathcal{D} | M_{indepent})} = \frac{2^{-7379.655}}{2^{-7423.938}} \approx 2.14 \cdot 10^{13} \label{eq:30}
+\end{equation}
+
+\vspace{15pt}
+
+The inferred Bayes Factor shows a significantly increased likelihood of the inhibitory model used in the generation of test data set, compared to the indepent model, consequently identifying the correct model.
+\\
+\\ % prior choiche ? tree picture
+After testing the particle filter was then applied to the time series data set containing the cell lineage of a murine stem cells. 3 trees were chosen based on their protein distribution showing states of dominance for both transcription factor levels. With respect to the toggle switch hypothesis these trees sufficiently represent the spectrum of lineage choice possibilities. The particle filter algortihm was performed with 1000 particles for all 3 trees, each containing respectively 41, 25 and 42 living cells at the end of the experiment.
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{l | c | c | c | c }
+Parameter & Prior & Tree 1 & Tree 2 & Tree 3 \\
+\hline
+\texttt{$k_1$} & 800 & 799.369 & 798.596 & 800.094\\
+\texttt{$k_2$} & 400 & 398.35 & 401.315 & 400.126\\
+\texttt{$k_3$} & 0.01 & 0.0129 & 0.0125 & 0.0128\\
+\texttt{$k_4$} & 0.01 &  0.0185 & 0.0159 & 0.0223\\
+\texttt{$K_{P1}$} & 4000 & 4002.256 & 3993.389 & 4001.58\\
+\texttt{$K_{P2}$} & 15000 & 15002.5 & 14998.55 & 14993.86\\
+\end{tabular}
+
+\vspace*{7pt}
+\caption{Expected value of the prior used for particle filtering for each parameter. Trees show the expected value of the posterior distributions for each particle filtering run on the respective cell lineage tree.}
+\label{tab:02}
+\end{center}
+\end{table}
+
+\begin{figure}[h]
+\includegraphics[width=0.75\textwidth]{figures/real_data.pdf}
+\caption{Result of the particle filtering algorithm for each parameter of the reaction model on timer series data of murine stem cells. The red lines show the prior distribution for the parameters used in the particle filtering. Tree lines represent the posterior distribution of fitted paramters after particle filter run  on the respective cell lineage tree.}  \label{fig:05}
+\end{figure}
+
+
+Table \ref{tab:02} shows the fitted paramters derived from using particle filtering on the time series data of murine stem cells with the corresponding prior and posterior distribution shown in figure \ref{fig:05}. The particle filter exhibits a similar paramter fitting performance compared to the test data set. On both the simulated as well as the experimental data the degradation rate parameters $k_3$ and $k_4$ show signifcant movement away from their expected prior values while the inhibitation paramters $K_{P1}$ and $K_{P1}$ show no change of their expected value. However the production parameters $k_1$ and $k_2$ on experimential data set were not changed by the particle filtering.
+
+After perfoming the particle filtering with the reaction model, the independent model used for model comparison on the test data set, was applied to experimental data an the following likelyhoods were derived:
+
+\begin{equation}
+B_{M1, M2} = \frac{P(\mathcal{D} | M_{inhibitory})}{P(\mathcal{D} | M_{indepent})} = \frac{2^{-2937.356}}{2^{-3640.912}} \approx 6.19 \cdot 10^{211} \label{eq:31}
+\end{equation}
+
+As shown by the Bayes Factor the inhbitory model massively outperforms the independent model on the experimental data set.
+
 \section{Discussion}
 
-The model is based on the theory that a cross inhibition of the transcription factors \texttt{$K_{P1}$} and \texttt{$K_{P2}$} results in a switch like behavior of the transcription factors, which in turn governs the CMP lineage decision. Our results however cannot support this hypothesis as the fitted model parameters \texttt{{$K_{P1}$}} and \texttt{{$K_{P2}$}}, which represent the concentrations at which the production inhibition of \texttt{Gata1} and \texttt{Pu.1} through the transcription factors is at half its maximum value, are significantly higher than the actual concentrations of \texttt{Pu.1} and \texttt{Gata.1} present in the time series data. This suggests that almost no inhibitory effect is apparent in the experiment. Furthermore the high similarity between both the production and degradation ratios of the transcription factors cannot account for uneven outcome of lineage decision via stochastic process.
+The test of the particle filtering algorithm on the simulated demonstrates the frameworks capability to infer model paramters based on tree structured time series data. However it shows uneven fitting performance given different paramter enviroments, with the degradation rates $k_3$ and $k_4$ being moved signficantly towards their optimum, while the production rate paramters $k_1$ and $k_2$ exhibit slower movement and the inhibitation parameters $K_{P1}$ and $K_{P1}$ were not changed at all. We suspect that this disparity of fitting performance is due to the difference in impact of the individual paramters on the protein levels and therefore the weight of the particles. The degredation reaction propensities depend on both the protein levels as well as the degredation rate and thus small changes of rates can have signifacnt influence on the protein levels. In comparison the production reaction propensities do not get scaled with protein numbers and hence the particle weighting is less susceptible to changes of production rates, resulting in a reduced fitting performance. As the inhibitation parameter only negativly scale the production reaction propensites, changes of these parameters shows even less impact on protein levels and the resulting particle weights. Another factor influencing the performance of the particle filter paramter inference is presence of equilibrium states in time series, during which the protein levels do not change by large margin. In these time frames the production and the degradation reaction propensities need to be evenly matched. This however can be achieved with any suboptimal production rate as long as the matching degredation rate can keep the equilibrium. In reaction model used during testing both production and degradtion rates lie below the optimal values, possibly resulting in paramter systm that can keep equilibrium stable. While the test data set also contains a multitude of transition phases with high alteration of protein levels, these phases are potentially not enought to allow for fitting of the parameters through particle filtering. This assumption is further amplified by remarkable consistency of the replicated particle filter applications on the test data.
+
+The model comparison of the inhbitory and the indipendant model shows promising results as the Bayes Factor can accuratly discern which model was used for generate of the test data set by a large margin. This shows that although the independent model has the possibility to generate trajectories similiar to that of an inhibitory model, the resulting performance of the particle filtering is still negatively influenced.
+
+The interpretation of the particle filtering on the experimental time series trees proves to be ambiguous. While the particle filter managed to significantly alter the degradation rates $k_3$ and $k_4$ with $k_4$ being more than doubled on Tree 3, the other parameters remain unchanged at the expected value of their respective priors. While this behavior is similar to the particle filter performance of the reaction model on the test data set, the results are insuffienct to derive whether	the underlying mechanics can be represented through the model. As all particle filtering instances on the experimental data show to be highly consistent, the performance appears to be unaffected by potential disparity of the experimental data. One possible factor influencing the performance of the particle is the number of transition phases in the experimental data set. If the initial assumption of toggle switch deciding the cell fate holds true, then most of cells would spend large quantity of the experiment time in moderate equilibrium state until one transcription factor reaches a dominance threshold by chance, triggering a transition phase. As this transition represent the lineage choice, no futher transition phases can be observed in this branch of the cell lineage tree and protein levels are then governed by the underlying mechanism of MEP or GMP cells. This would severly limit the amount of transiton phases needed to infer parameters beyond maintaining the equilibrium. 
+
+Another possible explanation for particle filter performance is a discrepance between the model used for simulation and the underlying mechanics govering the transcription factors. The utilized reaction model is rather coarse as only contain production and degradation reactions. In comparison a more fine grained model containing the state of transcription sites corresponding to the proteins as well as mRNA levels, production, degradation and translation ratios could potentially better represent the stochastic process of the fundamental mechanics. Regarding the model representing the intial hypothesis of a cross inhibiton we mindful of a recent study on same experimental data set claiming independence of early myeloid lineage choice with regards to the transcription factors \texttt{Pu.1} and \texttt{Gata.1} (\citealp{Hoppe16}). In their work the authors make sound arguements against a lineage choice governed by a stochastic process between \texttt{Pu.1} and \texttt{Gata.1}. If the authors suspicions holds true, then the rise of transcription factor production would be regulated by an external factor, majorly influencing the particle filters ability to infer production rate parameters during transition phases. However the model comparison between the indepent and the inhibitory model on the experimental data show a massive favor towards the inhibitory model, suggesting that cross talk between the transcription factors is definitively present. This is in accordance with the observation that at no time in the experiment the highest levels of both transcription could be observed simultaneously. Ultimately the described finding suggest the role of a cross inhibitory model to be the one of executing the lineage choiche rather than making it.
+
+
+% challenges
+
 
 \vspace*{-12pt}
 
 \section{Conclusion}
 
-In the course of this project we managed to implement the Particle Filter Algorithm as a framework for the inference of model parameters through the use of time series data. The resulting fitted parameters did not support our initial hypothesis of a cross inhibition between \textit{Gata1} and \textit{Pu.1}. This finding was also confirmed by other publication which used the same data set claiming independence of early myeloid lineage choice with regards to the transcription factors \texttt{Pu.1} and \texttt{Gata.1} (\citealp{Hoppe16}). This highlights our framework's capability to convey underlying mechanics prior unknown to us. We also show that our framework can be used to compare model performance with regards to experimental data. This in turn hallmarks our framework potential as supporting tool for research scientists.
+In the course of this project we managed to implement the particle filter algorithm as a framework for the inference of model parameters through the use of time series data. We demonstrate its ability to parameterize models with remarkable consistency and show the usefulness of particle trajectories for model comparison via Bayes Factors. While the particle filter did not manage to parameterize an agreeable model of our initial hypothesis, we found this to be in accordance with a recent study on the same data set, questining the role \textit{Gata1} and \textit{Pu.1} as toggle swtich deciding the cell fate of hematopoietic stem cells. This highlights our framework's capability to convey underlying mechanics prior unknown to us. This in turn hallmarks our framework potential as supporting tool for research scientists.
 
 \vspace*{-6pt}
 
@@ -451,13 +510,10 @@ In the course of this project we managed to implement the Particle Filter Algori
 
 \section*{Acknowledgements}
 
-We would like to express our gratitude to Werner Mewes, Fabian Theis, Jan Quell and Anna Dieckman for facilitating the project. We would also like to thanks Philipp S. Hoppe, Michael Schwarzfischer, Dirk Loeffler, Konstantinos D. Kokkaliaris, Oliver Hilsenbeck, Nadine Moritz, Max Endele, Adam Filipczyk, Adriana Gambardella, Nouraiz Ahmed, Martin Etzrodt, Daniel L. Coutu, Michael A. Rieger, Bernhard Schauberger, Ingo Burtscher, Olga Ermakova, Antje B\"urger, Heiko Lickert, Claus Nerlov and Timm Schroder who agreed to provide us with the experiment data, without which we wouldn't be able to test our framework and models.
+We would like to express our gratitude to Werner Mewes, Fabian Theis, Jan Quell and Anna Dieckman for facilitating the project. We would also like to thanks Philipp S. Hoppe, Michael Schwarzfischer, Dirk Loeffler, Konstantinos D. Kokkaliaris, Oliver Hilsenbeck, Nadine Moritz, Max Endele, Adam Filipczyk, Adriana Gambardella, Nouraiz Ahmed, Martin Etzrodt, Daniel L. Coutu, Michael A. Rieger, Bernhard Schauberger, Ingo Burtscher, Olga Ermakova, Antje B\"urger, Heiko Lickert, Claus Nerlov and Timm Schroder who agreed to provide us with the experiment data, without which we wouldn't be able to test our framework and models. 
 
-\vspace*{-18pt}
-
-\section*{Funding}
-
-We acknowledge the fact that the project and corresponding projects this project is based on are, directly and undirectly, financed by several grants given to following institutes within the Helmholtz Zentrum M\"unchen: the Institute of Bioinformatics and Systems Biology, the Institute of Computational Biology, the Institute of Diabetes and Regeneration Research, the Institute of Development Genetics and the Research Unit Stem Cell Dynamics. Some grants might also be involved coming from following institutions: Department of Biosystems Science and Engineering at ETH Zurich, MRC Molecular Haematology Unit at University of Oxford, Institute di Biologia Cellulare e Neurobiologia at CNR, Beta Cell Biology at the Medical Faculty of the Technical University of Munich, Department of Mathematics at the Technical University of Munich and EMBL Mouse Biology Unit.\vspace*{-12pt}
+%\section*{Funding}
+%We acknowledge the fact that the project and corresponding projects this project is based on are, directly and undirectly, financed by several grants given to following institutes within the Helmholtz Zentrum M\"unchen: the Institute of Bioinformatics and Systems Biology, the Institute of Computational Biology, the Institute of Diabetes and Regeneration Research, the Institute of Development Genetics and the Research Unit Stem Cell Dynamics. Some grants might also be involved coming from following institutions: Department of Biosystems Science and Engineering at ETH Zurich, MRC Molecular Haematology Unit at University of Oxford, Institute di Biologia Cellulare e Neurobiologia at CNR, Beta Cell Biology at the Medical Faculty of the Technical University of Munich, Department of Mathematics at the Technical University of Munich and EMBL Mouse Biology Unit.\vspace*{-12pt}
 
 %\bibliographystyle{natbib}
 %\bibliographystyle{achemnat}

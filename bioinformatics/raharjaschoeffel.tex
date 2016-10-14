@@ -229,11 +229,11 @@ w_i^k = P(D_i | X_i^k) = \mathcal{N}(\mathcal{D}_i | X_i^k)\label{eq:12}
 
 The visualization of the whole particle filtering process could be seen in Figure \ref{fig:03}.
 
-\begin{figure}[h]
+\begin{figure*}[h]
 %\makebox[\textwidth]{\includegraphics[width=\paperwidth]{figures/particle_filtering.png}}
-\includegraphics[width=9cm]{figures/particle_filtering.png}
+\includegraphics[width=15cm]{figures/particle_filtering_2.png}
 \caption{Visualization of particle fil	tering. (A): The particle filter requires a series of observation $\mathcal{D} = (\mathcal{D}_0, \mathcal{D}_1, \cdots \mathcal{D}_N)$ (top) and a prior distribution for model parameters $\pi(\theta)$ (bottom) as input. (B): Particles are initialized by sampling initial states $X(K)$ for each particle $K$. Parameters $\Theta$ are sampled from the prior distribution $\pi(\theta)$. (C): The trajectories are resampled according to the likelihood $w_0^{(k)} = P(D_0|X_0(k))$ and propagated to the next time step using stochastic simulations to generate new states $X_1^{(k)}$ at timepoint $t_1$. Model parameters for each latent trajectory are resampled from the conditional distribution $P(\theta|X^{(k)}_{[t0,t1]})$. (D): At each iteration, the weights are recomputed and the particles are resampled. Resampled particles are propagated to the next timepoint and the parameters are resampled conditional on the resampled latent trajectories. Over time the posterior parameter distribution converges to the true value. Figure taken from Feigelman, 2016 \citealp{Feigelman16}}  \label{fig:03}
-\end{figure}
+\end{figure*}
 
 \vspace*{-6pt}
 
@@ -421,8 +421,6 @@ Parameter & Simulation & Prior & Replicate 1 & Replicate 2 & Replicate 3 \\
 \caption{Result of the particle filtering algorithm for each parameter of the reaction model on the test data set. The dashed lines indictated the optimal parameter values used in the data creation. The red lines show the prior distribution for the parameters used in the particle filtering. Replicate lines represent the posterior distribution of fitted paramters after particle filter run.}  \label{fig:04}
 \end{figure*}
 
-\vspace*{-12pt}
-
 Table \ref{tab:01} shows the results of the particle filtering test for each of the 6 paramters with the posterior distributions visualized in figure \ref{fig:04}. The posterior distribution of the paramters $k_3$ and $k_4$ (the degradation reactions of \texttt{Pu.1} and \texttt{Gata1} respectivly) show the most recognisable motion towards their optimal values while the parameters $k_1$ and $k_2$ responsible for the production reactions show only little movement. No significant movement of the posteriors representing the inhibition paramters $K_{P1}$ and $K_{P2}$ can be observed. The replicates of the particle filtering are highly consistent in their results with expected values of their posterior distributions being marginally different. Furthermore the paramters $k_3$ and $k_4$ show a similar transformation of their particluar priors towards the shape of the resulting posteriors.
 
 
@@ -432,8 +430,6 @@ In order to investigate the capability of the particle filter for model comparsi
 \begin{equation}
 B_{M1, M2} = \frac{P(\mathcal{D} | M_{inhibitory})}{P(\mathcal{D} | M_{indepent})} = \frac{10^{-2221.498}}{10^{-2234.828}} \approx 2.14 \cdot 10^{13} \label{eq:30}
 \end{equation}
-
-\vspace{15pt}
 
 The inferred Bayes Factor shows a significantly increased likelihood of the inhibitory model used in the generation of test data set, compared to the indepent model, consequently identifying the correct model.
 \\
@@ -469,16 +465,20 @@ B_{M1, M2} = \frac{P(\mathcal{D} | M_{inhibitory})}{P(\mathcal{D} | M_{indepent}
 
 As shown by the Bayes Factor the inhbitory model massively outperforms the independent model on the experimental data set.
 
-\section{Discussion}
-
-The test of the particle filtering algorithm on the simulated demonstrates the frameworks capability to infer model paramters based on tree structured time series data. However it shows uneven fitting performance given different paramter enviroments, with the degradation rates $k_3$ and $k_4$ being moved signficantly towards their optimum, while the production rate paramters $k_1$ and $k_2$ exhibit slower movement and the inhibitation parameters $K_{P1}$ and $K_{P1}$ were not changed at all. We suspect that this disparity of fitting performance is due to the difference in impact of the individual paramters on the protein levels and therefore the weight of the particles. The degredation reaction propensities depend on both the protein levels as well as the degredation rate and thus small changes of rates can have signifcant influence on the protein levels. In comparison the production reaction propensities do not get scaled with protein numbers and hence the particle weighting is less susceptible to changes of production rates, resulting in a reduced fitting performance. As the inhibitation parameter only negativly scale the production reaction propensites, changes of these parameters shows even less impact on protein levels and the resulting particle weights. Futhermore inhibitation parameters represent absolute protein numbers that influence rates rather than being actual reaction rates, potentially hindering the effectiveness of particle filter gamma update. Another factor influencing the performance of the particle filter paramter inference is presence of equilibrium states in time series, during which the protein levels do not change by large margin. In these time frames the production and the degradation reaction propensities need to be evenly matched. This however can be achieved with any suboptimal production rate as long as the matching degredation rate can keep the equilibrium. In reaction model used during testing both production and degradtion rates lie below the optimal values, possibly resulting in paramter systm that can keep equilibrium stable. While the test data set also contains a multitude of transition phases with high alteration of protein levels, these phases are potentially not enough to allow for fitting of the parameters through particle filtering. This assumption is further amplified by remarkable consistency of the replicated particle filter applications on the test data.
 
 \begin{figure*}[h]
 \includegraphics[width=\textwidth]{figures/real_data.pdf}
 \caption{Result of the particle filtering algorithm for each parameter of the reaction model on timer series data of murine stem cells. The red lines show the prior distribution for the parameters used in the particle filtering. Tree lines represent the posterior distribution of fitted paramters after particle filter run  on the respective cell lineage tree.}  \label{fig:05}
 \end{figure*}
 
+\section{Discussion}
+
+The test of the particle filtering algorithm on the simulated demonstrates the frameworks capability to infer model paramters based on tree structured time series data. However it shows uneven fitting performance given different paramter enviroments, with the degradation rates $k_3$ and $k_4$ being moved signficantly towards their optimum, while the production rate paramters $k_1$ and $k_2$ exhibit slower movement and the inhibitation parameters $K_{P1}$ and $K_{P1}$ were not changed at all. We suspect that this disparity of fitting performance is due to the difference in impact of the individual paramters on the protein levels and therefore the weight of the particles. The degredation reaction propensities depend on both the protein levels as well as the degredation rate and thus small changes of rates can have signifcant influence on the protein levels. In comparison the production reaction propensities do not get scaled with protein numbers and hence the particle weighting is less susceptible to changes of production rates, resulting in a reduced fitting performance. As the inhibitation parameter only negativly scale the production reaction propensites, changes of these parameters shows even less impact on protein levels and the resulting particle weights. Futhermore inhibitation parameters represent absolute protein numbers that influence rates rather than being actual reaction rates, potentially hindering the effectiveness of particle filter gamma update. Another factor influencing the performance of the particle filter paramter inference is presence of equilibrium states in time series, during which the protein levels do not change by large margin. In these time frames the production and the degradation reaction propensities need to be evenly matched. This however can be achieved with any suboptimal production rate as long as the matching degredation rate can keep the equilibrium. In reaction model used during testing both production and degradtion rates lie below the optimal values, possibly resulting in paramter systm that can keep equilibrium stable. While the test data set also contains a multitude of transition phases with high alteration of protein levels, these phases are potentially not enough to allow for fitting of the parameters through particle filtering. This assumption is further amplified by remarkable consistency of the replicated particle filter applications on the test data.
+
+
 The model comparison of the inhbitory and the indipendant model shows promising results as the Bayes Factor can accuratly discern which model was used for generate of the test data set by a large margin. This shows that although the independent model has the possibility to generate trajectories similiar to that of an inhibitory model, the resulting performance of the particle filtering is still negatively influenced.
+
+
 
 The interpretation of the particle filtering on the experimental time series trees proves to be ambiguous. While the particle filter managed to significantly alter the degradation rates $k_3$ and $k_4$ with $k_4$ being more than doubled on Tree 3, the other parameters remain unchanged at the expected value of their respective priors. While this behavior is similar to the particle filter performance of the reaction model on the test data set, the results are insuffienct to derive whether	the underlying mechanics can be represented through the model. As all particle filtering instances on the experimental data show to be highly consistent, the performance appears to be unaffected by potential disparity of the experimental data. One possible factor influencing the performance of the particle is the number of transition phases in the experimental data set. If the initial assumption of toggle switch deciding the cell fate holds true, then most of cells would spend large quantity of the experiment time in moderate equilibrium state until one transcription factor reaches a dominance threshold by chance, triggering a transition phase. As this transition represent the lineage choice, no futher transition phases can be observed in this branch of the cell lineage tree and protein levels are then governed by the underlying mechanism of MEP or GMP cells. This change of mechanical ruling could potentially impair the particle filters ability to infer parameters for the original reaction model.
 

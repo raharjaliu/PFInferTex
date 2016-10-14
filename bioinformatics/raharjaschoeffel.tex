@@ -15,7 +15,7 @@
 
 \subtitle{Computational and Systems Biology}
 
-\title[Model inference from protein time-course in Hematopoietic Stem Cells (HSC)]{Model inference from protein time-course in Hematopoietic Stem Cells (HSC)}
+\title[Model inference from protein time-courses in Hematopoietic Stem Cells (HSC)]{Model inference from protein time-course in Hematopoietic Stem Cells (HSC)}
 \author[Pandu Raharja, Rene Schoeffel, Michael Strasser and Carsten Marr]{Pandu Raharja\,$^{\text{\sfb 1,}\text{\sfb 2,}\text{\sfb 3,}*}$, Rene Schoeffel\,$^{\text{\sfb 1,}\text{\sfb 2,}\text{\sfb 3}}$, Michael Strasser\,$^{\text{\sfb 3}}$ and Carsten Marr\,$^{\text{\sfb 3,}*}$}
 \address{$^{\text{\sf 1}}$Technische Universit\"at M\"unchen, Fakult\"at f\"ur Informatik, Boltzmannstr. 3, 85748 Garching bei M\"unchen, Germany\\
 $^{\text{\sf 2}}$Ludwig-Maximilians-Universit\"at M\"unchen, Professor-Huber-Platz 2, 80539 M\"unchen, Germany\\
@@ -29,8 +29,8 @@ $^{\text{\sf 3}}$Helmholtz Zentrum M\"unchen, Institute of Computational Biology
 \editor{Associate Editor: Jan Quell}
 
 \abstract{\textbf{Motivation:} 
-Unlike averaged effect commonly found in aggregate cells population data, the dynamics of single cell strongly exhibits the stochasticity of gene expression. These stochastically influenced dynamics in gene expression appears to convey more information about the background mechanism of gene expression routines than it would be otherwise understood through the study of population average.\\
-\textbf{Results:}In this paper we presented a particle filtering-based algorithm and a framework that is capable of inferring parameters underlying the stochastic models from single cell expression data. This framework was then applied on time-lapsed microscopy data of two transcription factors (\texttt{Pu.1} and \texttt{Gata.1}) in murine blood stem cells. It is thought that both transcription factors play decisive roles in several stages of stem cell differentiation, especially the differentiation of hematopoetic stem cells. Our results provide several insights into the dynamics of blood stem cells maturation and specifically in the single cell environment. We managed to gain several valuable insights on the interaction dynamics between two transcription factors and the outcome of cell maturation. While doing so, we managed to developed highly flexible general purpose highly parallelized framework to model dynamical systems using particle filtering. The general framework software is now available as free software for anyone to use.\\
+In single cell setting, the dynamics of the systems governing the cell -- gene expression being one -- are heavily influenced by the stochasticity of each involving element. These stochastic dynamics in gene expression appears to convey more information about the underlying mechanism of gene expression processes than it would be otherwise assumed through the study of population average.\\
+\textbf{Results:}In this paper we presented a particle filtering-based algorithm and a framework that is capable of inferring parameters underlying the stochastic models from single cell expression data. This framework was then applied on time-lapsed microscopy data of two transcription factors (\texttt{Pu.1} and \texttt{Gata.1}) in murine blood stem cells. It is thought that both transcription factors play decisive roles in several stages of stem cell differentiation, especially the differentiation of myeloid progenitors. Our results provide several insights into the dynamics of blood stem cells maturation and specifically in the single cell environment. We managed to gain several valuable insights on the interaction dynamics between two transcription factors and the outcome of cell maturation. While doing so, we managed to developed highly flexible general purpose highly parallelized framework to model dynamical systems using particle filtering. The general framework software is now available as free software for anyone to use.\\
 \textbf{Availability:} The data are available upon request. A general framework for determining the parameters that best explain the data were published under open source license. The complete source code of the program is publicly accessible at \href{https://github.com/raharjaliu/PFInfer}{https://github.com/raharjaliu/PFInfer}.\\
 \textbf{Contact:} \href{pandu.raharja@tum.de}{pandu.raharja@tum.de}\\
 \textbf{Supplementary information:} Supplementary data are available at \textit{Bioinformatics}
@@ -40,17 +40,17 @@ online.}
 
 \section{Introduction}
 
-The advances in gene expression measurement techniques, coupled with equally rapid advances in single cell analytics, have allowed the more recent high resolution single cell analysis of cell dynamics \citep{Feigelman16, Hoppe16}. This has enabled us, for example, to look deeper into the dynamics of stem cell maturation. In recent years alone, several genes that potentially are involved in the decision making mechanism of cell maturation going from Inner Mass Cell (IMC) all the way to somatic cells have been discovered and widely known by now \citep{Graf09}. While this has enable us to study cell processes more thoroughly, the deterministic population-averaged nature of cell dynamics was becoming less and less apparent while the stochastic nature of single cell dynamics was becoming dominating as the analysis went down onto single cell resolution \citep{Elowitz02}. Hence our motivation to apply inference methods that are capable to infer dynamics of the systems that are heavily influenced by non-deterministic factors.
+The advances in gene expression measurement techniques, coupled with equally rapid advances in single cell analytics, have allowed the more recent high resolution single cell analysis of cell dynamics \citep{Feigelman16, Hoppe16}. This has enabled us, for example, to look deeper into the dynamics of stem cell maturation. In recent years, several genes that potentially are involved in the decision making mechanism of cell maturation going from Inner Mass Cell (IMC) all the way to somatic cells have been discovered and widely known by now \citep{Graf09}. While this has enable us to study cell processes more thoroughly, the deterministic population-averaged nature of cell dynamics was becoming less and less apparent while the stochastic nature of single cell dynamics was becoming dominating as the analysis went down onto single cell resolution \citep{Elowitz02}. Hence our motivation to apply inference methods that are capable to infer dynamics of the systems that are heavily influenced by non-deterministic factors.
 
-For this project we use particle filtering to learn more about aforementioned dynamics. We apply this technique on our time-dependent expression data of single cells containing concentration of both transcription factors. The approach of the experiment would be further described in the next section followed by the theoretical aspects of the particle filtering and other methods used in this project.
+For this project we use particle filtering to learn more about aforementioned dynamics. We apply this technique on our time-dependent expression data of single cells containing concentration of both transcription factors. The expression data were measured from time-lapsed microscopy of fluorescent-tagged proteins' expression level of the cells. The approach of the experiment would be further described in the next section followed by the theoretical aspects of the particle filtering and other methods used in this project.
 
-In this paper we focus on the maturation lines of hematopoietic stem cells \citep{Orkin08}. The lines start with Long Term Hematopoietic Stem Cells (LT-HSC), which is progenitor of all blood cells. During its life, LT-HSC could either divide into two LT-HSC or turn into Short Term Hematopoietic Stem Cell (ST-HSC). SH-HSC will then undergo a transition process into either Common Myeloid Progenitor (CMP) or Common Lymphoid Progenitor (CLP). As the names suggest, both cells are the ancestor of all myeloid cells and lymphocites, respectively. Each would then further maturate into their respective intermediate cells and eventually the mature somatic cells (Red Blood Cells, Megakaryocytes, Mast Cells, Eosinophils, Neutrophils and Macrophages from CMP and B and T Lymphocytes from CLP; see Figure \ref{fig:01}).
+In this paper we focus on the maturation lines of hematopoietic stem cells \citep{Orkin08}. The cell lines start with Long Term Hematopoietic Stem Cells (LT-HSC), which is the progenitor of all blood cells. During its life, LT-HSC could either divide into two LT-HSC or turn into Short Term Hematopoietic Stem Cell (ST-HSC). SH-HSC will then undergo a transition process into either Common Myeloid Progenitor (CMP) or Common Lymphoid Progenitor (CLP). As the names suggest, both cells are the ancestor of all myeloid cells and lymphocites, respectively. Each would then further maturate into their respective intermediate cells and eventually the mature somatic cells (Red Blood Cells, Megakaryocytes, Mast Cells, Eosinophils, Neutrophils and Macrophages from CMP and B and T Lymphocytes from CLP; see Figure \ref{fig:01}).
 
-The decision process of CMP transitioning into either MEP and GMP stands in focus of our project. Two transcription factors, \texttt{Pu.1}and \texttt{Gata.1} are thought to influence the decision process \citep{Graf09}. Moreover, both transcription factors are known to inhibit each other. It is thought that the whole cross inhibition dynamics between the two has an impact on the fate of Common Myeloid Progenitor. This dual-agent dynamics is thought to behave in a way that is self-fulfilling. That is, a slight change in concentration of transcription factors favoring one state over another will have stupendous impact on cell fate decision \citep{Filipczyk15}.
+The decision process of CMP transitioning into either MEP and GMP is the focus of our project. Two transcription factors, \texttt{Pu.1}and \texttt{Gata.1} are thought to influence the decision process \citep{Graf09}. Moreover, both transcription factors are known to inhibit each other. It is thought that the whole cross inhibition dynamics between the two has an impact on the fate of Common Myeloid Progenitor. This dual-agent dynamics is thought to behave in a way that is self-fulfilling. That is, a slight change in concentration of transcription factors favoring one state over another will have stupendous impact on cell fate decision \citep{Zhang03}.
 
 \begin{figure}[h]
 \includegraphics[width=8cm]{figures/homatopoietic_focus}
-\caption{Maturation cascade of intermediate Common Myeloid Progenitor (CMP) to Megakaryocyte-Eerythroid Progenitor (MEP) and Granulocyte/Macrophage Progenitor (GMP). MEP would then maturate into somatic Red Blood Cells and Megakaryocites while GMP would undergo maturation into Granulocytes and Monocyptes. For each process there are known factors which are known to interact antagonistically on maturation decision. Our CMP to MEP and GMP decision stands on the top of the figure with two transcription factors of interest, \texttt{Pu.1} and \texttt{Gata.1} interact atagonistically. Figure taken from \citealp{Graf09}.}\label{fig:01}
+\caption{Maturation cascade of intermediate Common Myeloid Progenitor (CMP) to Megakaryocyte-Eerythroid Progenitor (MEP) and Granulocyte/Macrophage Progenitor (GMP). MEP would then maturate into somatic Red Blood Cells and Megakaryocytes while GMP would undergo maturation into Granulocytes and Monocyptes. For each process there are known factors which are known to interact antagonistically on maturation decision. Our CMP to MEP and GMP decision stands on the top of the figure with two transcription factors of interest, \texttt{Pu.1} and \texttt{Gata.1} interact atagonistically. Figure taken from \citealp{Graf09}.}\label{fig:01}
 \end{figure}
 
 \section{Approach}
@@ -59,26 +59,26 @@ For the single cell dynamic analysis to be possible, we were interested in gaini
 
 \subsection{Experimental Setting}
 
-The data for the experiment were taken from Hoppe {\it et~al}, 2016 \citep{Hoppe16}. The expressed protein of interests \texttt{Pu.1} and \texttt{Gata.1} were tagged with distinct fluorescence proteins \texttt{eYFP} and \texttt{mCherry} respectively. Time-wise expression levels were then measured based on the intensity of aforementioned florescence proteins.
+The data for the experiment were taken from Hoppe {\it et~al}, 2016 \citep{Hoppe16}. The expressed protein of interests \texttt{Pu.1} and \texttt{Gata.1} were tagged with distinct fluorescence proteins \texttt{eYFP} and \texttt{mCherry} respectively. Time-resolved expression levels were then measured based on the intensity of aforementioned florescence proteins.
 
-Time-lapse imaging was performed at 37 $^{\circ}$C in fibronectin coated channel slides provided by Takara Bio. The light source for the experiment was a HXP 120 from Zeiss. 46HE and 43HE, both provided by Zeiss, were used to detect eYFP and mCherry fluorescence coming from the cells at exposure times between 400-1,500 ms using an AxioCam HRm from Zeiss. Bright field pictures were taken every 60-120 s while fluorescent pictures used for the measuring \texttt{PU.1-eYFP} and \texttt{GATA1-mCherry} were acquired every 30 min. Pictures used for analysis were saved in lossless TIF or PNG format. Single-cell tracking and image quantification were performed using self-written software as described
+Time-lapse imaging was performed at 37 $^{\circ}$C in fibronectin coated channel slides provided by Takara Bio. The light source for the experiment was a HXP 120 from Zeiss. 46HE and 43HE, both provided by Zeiss, were used to detect eYFP and mCherry fluorescence coming from the cells at exposure times between 400-1,500 ms using an AxioCam HRm from Zeiss. Bright field pictures were taken every 60-120 s while fluorescent pictures used for the measuring \texttt{PU.1-eYFP} and \texttt{GATA1-mCherry} were acquired every 30 min. Pictures used for analysis were saved in lossless TIF or PNG format. Single-cell tracking and image quantification were performed using self-written software as described by \citealp{Hoppe16}.
 
-Figure \ref{fig:02} shows how the dataset from similarly conducted experiment taken from Feigelman, 2016 \citep{Feigelman16} visually look like.
+Figure \ref{fig:02} shows how the dataset from similarly conducted experiment taken from \citealp{Feigelman16}
 
 \begin{figure}[h]
 \includegraphics[width=8cm]{figures/cell-generations.png}
-\caption{Example of single cell expression data. In this example, initially only one cell is observed under the bright-field and ultraviolet recording. The cell would then divide into two other cells. The system automatically recognizes this and separate measurements of expression would then be conducted, which is visible in the lower part of the figure. The above example also makes point of the uniqueness and tracability of each cell by pointing two specific lineages within the data: the blue and red lineages. The system records complete expression measurement of the lineages which could be seen in second half of the figure corresponding with the first half of the figure. The system is capable of recording not only cell division but also cell deaths, as can be seen through the x's sign in the upper part of the figure. Figure taken from \citealp{Feigelman16}.}\label{fig:02}
+\caption{Example of single cell expression data. In this example, initially only one cell is observed. The cell would then divide into two cells. The system automatically recognizes this and separate measurements of expression would then be conducted, which is visible in the lower part of the figure. The above example also emphasizes the uniqueness and the tracability of each cell by pointing two specific lineages within the data: the blue and red lineages. The system records complete expression measurement of the lineages which could be seen in second half of the figure corresponding with the first half of the figure. The system is capable of recording not only cell division but also cell deaths, as can be seen through the x's sign in the upper part of the figure. Figure taken from \citealp{Feigelman16}.}\label{fig:02}
 \end{figure}
 
 \section{Models}
 
-We utilize particle filtering to learn the dynamics of maturation of Common Myeloid Progentior (CMP) cells. The definition of particle filtering could be seen in the subsection \textbf{Particle Filtering}. \textbf{Simulation Process} details how the simulation would be done and the probabilistic approaches used in it. The assumed model of the cell maturation is then described in the subsection \textbf{Reaction Models}. For comparison purpose, a framework for model comparison is also presented in subsection \textbf{Models Comparison}. This is especially helpful for comparing the default model described in \textbf{Reaction Models} and other possible alternative models.
+We utilize particle filtering to learn the dynamics of maturation of Common Myeloid Progentior (CMP) cells. The definition of particle filtering could be seen in the subsection \textbf{Particle Filtering}. \textbf{Simulation Process} details how the simulation is done and the probabilistic approaches is used in it. The assumed model of the cell maturation is then described in the subsection \textbf{Reaction Models}. A framework for model comparison is also presented in subsection \textbf{Models Comparison}. This is especially helpful for comparing the default model described in \textbf{Reaction Models} and other possible alternative models.
 
 \subsection{Particle Filtering}
 
-Particle filtering, which in several more recent literature is also known as \textbf{Sequential Monte Carlo} (SMC) \citep{Doucet01, Liu98}), is a class of methods generally used to solve the filtering problem. Classically, filtering problem is the problem of identifying best estimate of some system given noisy and incomplete input -- hence the word filter \citep{DelMoral96}. As the alternative name implies, it is a set of methods that run Monte Carlo sequentially interrupted by inference phase. It consists mainly of two phase steps, \textbf{prediction-updating} and \textbf{mutation-selection}, that are done sequentially and repetitively. In the first phase, the prediction-updating done updates the conditional probability of underlying assumption -- generally referred to as \textbf{posterior distribution} -- of a system given the previous simulation. Later on, a simulation (mutation) is done on given underlying assumption and simulations best fit the data would then be selected to update the underlying assumption in the next prediction-updating step \citep{DelMoral12}.
+Particle filtering, which is also known as \textbf{Sequential Monte Carlo} (SMC) \citep{Doucet01, Liu98}), is a class of methods generally used to solve the filtering problem. Classically, filtering problem is the problem of identifying best estimate of some system given noisy and incomplete input -- hence the word filter \citep{DelMoral96}. As the alternative name implies, it is a set of methods that run Monte Carlo sequentially interrupted by inference phase. It consists mainly of two phase steps, \textbf{prediction-updating} and \textbf{mutation-selection}, that are done sequentially and repetitively. In the first phase, the prediction-updating updates the conditional probability of underlying assumption -- generally referred to as \textbf{posterior distribution} -- of a system given the previous simulation. Later on, a simulation (mutation) is done on given underlying assumption and simulations best fit the data would then be selected to update the underlying assumption in the next prediction-updating step \citep{DelMoral12}.
 
-As the name also implies, particle filtering utilizes the use of particle, an abstract representation of combination of model, data and parameters. In the next part we will dive deep into the theory of particle filtering. First, we will define what a particle is. This is then followed by definition of Propensity, Posterior, Parameters and Prior. Finally the section will be closed by short review of other methods that also tried to stochastically infer parameters on time-lapsed fluorescent single cell data.
+As the name also implies, particle filtering consists of sequentially and repetitively filtering of mathematical construct called particle, an abstract representation of combination of model, data and parameters. In the next part we will dive deep into the theory of particle filtering. First, we will define what a particle is. This is then followed by definition of Propensity, Posterior, Parameters and Prior. Finally the section will be closed by short review of other methods that also tried to stochastically infer parameters on time-lapsed fluorescent single cell data.
 
 \subsubsection{Particle}
 
@@ -96,7 +96,7 @@ X_i = f(X_{i - 1}, \mathcal{M}, \theta_{i - 1})\label{eq:02}
 
 \subsubsection{Propensity}
 
-As the name suggests, propensity is measure of a certain thing would be happening in a given time. In our model specifically, a propensity roughly corresponds to the chance of a reaction to happen in a given time,
+As the name suggests, propensity is measure of how likely a certain thing would be happening in a given time. In probabilistic theory, it is understood as a tendency a certain type of physical situation would yield an outcome of certain kind \citep{Nodelman03}. In our model specifically, a propensity roughly corresponds to the chance of a reaction to happen in a given time,
 
 \begin{equation}
 a_i \propto P(R_k = r_i)
@@ -144,7 +144,7 @@ In the simulation it is well known that, to compute prior $P(\mathcal{D} | X, \t
 P(\mathcal{D} | X, \theta) = P(\mathcal{D} | X)\label{eq:05}
 \end{equation}
 
-Note that the above equation inherently assumes that $\mathcal{D}$ is only directly dependent on $X$ and $X$ is in turn only directly dependent on $\theta$. Incorporating this onto our update rule, and expanding the definition of $P(X, \theta)$ using chain rule, we get
+Note that the above equation inherently assumes that $\mathcal{D}$ is only directly dependent on $X$ and $X$ is in turn only directly dependent on $\theta$. Incorporating this onto our update rule, and expanding Equation (\ref{eq:04}) using chain rule, we get
 
 \begin{equation}
 P(X, \theta | \mathcal{D}) = \frac{P(\mathcal{D} | X)  P(X | \theta) \pi(\theta)}{P(\mathcal{D})}\label{eq:06}
@@ -164,7 +164,7 @@ P(X, \theta | \mathcal{D}) = \frac{\prod_{i=0}^{N} P(\mathcal{D}_i | X_i) P(X_0)
 
 \subsubsection{Parameters}
 
-During the simulation we assumes certain parameters that would influence the trajectory of the simulation. The parameter set $\theta$ could then mathematically be understood as P-tuple containing all the parameters that are assumed in the simulation,
+During the simulation we assumes certain parameters that would influence the trajectory of the simulation. The parameter set $\theta$ is a P-tuple containing all the parameters that are assumed in the simulation,
 
 \begin{equation}
 P := (P_0, P_1, \dots , P_P)\label{eq:08}
@@ -191,9 +191,9 @@ We used gamma distribution as our prior in our model due the fact that the, acco
 There are several methods that infer stochastic processes. Wilkinson -- and later on, Golightly and Wilkinson --  inferred stochastic differential equation (SDE) kinetic model of bacterial gene regulation using likelihood-free Markov Chain Monte Carlo (MCMC) on florescence data \citep{Wilkinson10, GolightlyWilkinson10}. Gonzales \textit{et al} did two stochastic inference methods, Mixed Effects (ME) and the Chemical Master Equation (CME), on time-lapsed single-cell data. The paper also tested the method by inferring previously known HOG pathway in yeast \textit{Saccharomyces cerevisiae} \citep{Gonzales13}. Koromowski \textit{et al} developed Bayesian framework performed using Markov Chain Monte Carlo (MCMC) and linear noise approximation to calibrate models on fluorescent experiment data \citep{Komorowski09}.
 
 
-\subsection{Simulation Process}
+\subsection{Inference Process}
 
-The simulation is run in roughly following high level steps:
+The simulation is run in the following main steps:
 
 \begin{enumerate}
 \item Initialization of parameters $\theta$.
@@ -208,7 +208,7 @@ Ki := (K_{i1}, K_{i2}, \dots, K_{im})\label{eq:11}
 \end{equation}
 
 \item Simulation run of each particle $K_{ij}$
-\item Weighting of each particle. The weight is a function of probability of observing the data given the simulation result.
+\item Weighting of each particle. The weight is a function of the probability of observing the data given the simulation result.
 
 \begin{equation}
 w_i^k = P(D_i | X_i^k) = \mathcal{N}(\mathcal{D}_i | X_i^k)\label{eq:12}
@@ -222,22 +222,23 @@ w_i^k = P(D_i | X_i^k) = \mathcal{N}(\mathcal{D}_i | X_i^k)\label{eq:12}
 
 \end{enumerate}
 
-\item Model comparison. This could be done by utilizing measures such as Akaike Information Criterion, Bayesian Information Criterion and Bayes Factor \citep{PosadaBuckley14, Bozdogan87}.
+\item Model comparison.
 
 \end{enumerate}
 
 The visualization of the whole particle filtering process could be seen in Figure \ref{fig:03}.
 
 \begin{figure}[h]
-\includegraphics[width=8cm]{figures/particle_filtering.png}
-\caption{Visualization of particle filtering. (A): The particle filter requires a series of observation $\mathcal{D} = (\mathcal{D}_0, \mathcal{D}_1, \cdots \mathcal{D}_N)$ (top) and a prior distribution for model parameters $\pi(\theta)$ (bottom) as input. (B): Particles are initialized by sampling initial states $X(K)$ for each particle $K$. Parameters $\Theta$ are sampled from the prior distribution $\pi(\theta)$. (C): The trajectories are resampled according to the likelihood $w_0^{(k)} = P(D_0|X_0(k))$ and propagated to the next time step using stochastic simulations to generate new states $X_1^{(k)}$ at timepoint $t_1$. Model parameters for each latent trajectory are resampled from the conditional distribution $P(\theta|X^{(k)}_{[t0,t1]})$. (D): At each iteration, the weights are recomputed and the particles are resampled. Resampled particles are propagated to the next timepoint and the parameters are resampled conditional on the resampled latent trajectories. Over time the posterior parameter distribution converges to the true value. Figure taken from Feigelman, 2016 \citealp{Feigelman16}}  \label{fig:03}
+%\makebox[\textwidth]{\includegraphics[width=\paperwidth]{figures/particle_filtering.png}}
+\includegraphics[width=9cm]{figures/particle_filtering.png}
+\caption{Visualization of particle fil	tering. (A): The particle filter requires a series of observation $\mathcal{D} = (\mathcal{D}_0, \mathcal{D}_1, \cdots \mathcal{D}_N)$ (top) and a prior distribution for model parameters $\pi(\theta)$ (bottom) as input. (B): Particles are initialized by sampling initial states $X(K)$ for each particle $K$. Parameters $\Theta$ are sampled from the prior distribution $\pi(\theta)$. (C): The trajectories are resampled according to the likelihood $w_0^{(k)} = P(D_0|X_0(k))$ and propagated to the next time step using stochastic simulations to generate new states $X_1^{(k)}$ at timepoint $t_1$. Model parameters for each latent trajectory are resampled from the conditional distribution $P(\theta|X^{(k)}_{[t0,t1]})$. (D): At each iteration, the weights are recomputed and the particles are resampled. Resampled particles are propagated to the next timepoint and the parameters are resampled conditional on the resampled latent trajectories. Over time the posterior parameter distribution converges to the true value. Figure taken from Feigelman, 2016 \citealp{Feigelman16}}  \label{fig:03}
 \end{figure}
 
 \vspace*{-6pt}
 
 \subsubsection{Particle Generation}
 
-As mentioned before, A particle $\mathcal{K}$ is defined as a 3-tuple of trajectory $X$, parameter set $\theta$ and assumed model $\mathcal{M}$. For a specific model, j-th particle at i-th time particle is then just a tuple of trajectory and parameter set $k_{ij} = (x_i, \theta_{ij})$.
+As mentioned before, A particle $\mathcal{K}$ is defined as a 3-tuple of trajectory $X$, parameter set $\theta$ and model $\mathcal{M}$. For a specific model, j-th particle at i-th time particle is then just a tuple of trajectory and parameter set $k_{ij} = (x_i, \theta_{ij})$.
 
 For initial time, a particle could be constructed by combining initial parameters, which were arbitrarily defined by a pre-defined prior, and initial trajectory value $X_0$. There are three ways to define the initial trajectory value. First is to take 0 as initial value. Second is to take the first measurement data $\mathcal{D}_0$. Third is to model initial data as normal distributed instances around $\mathcal{D}_0$, i.e. $X_0 \propto \mathcal{N}(\mathcal{D}_0)$. It is worth noting that the first strategy may not always be applicable.
 
@@ -249,11 +250,11 @@ M particles would then be created and for each iteration of the simulation with 
 
 \subsubsection{Simulation Run}
 
-Simulation is done using Gillespie's SSA algorithm, named after Daniel Thomas Gillespie (\citealp{Gillespie77}). Dating back to as early as 1945, when it was developed by Joseph Doob \citealp{Doob45} \citealp{Chung67}, moden Gillespie implementation includes improvements developed years after the invention of the algorithm such as $\tau$-leaping and Bayesian Approximation Method. Such improvements are generally essential since it would reduce computational cost of the simulation and in turn enable the simulation to scale further to accommodate more leveraged simulation -- in our case we could simulate more cells at the same time in possible more fine-grained time-resolved manner. In our case especially, such improvements are needed to accommodate the explosion of the number of cells within our culture. Specificallt, an approximative method would prevent a bottleneck in simulation caused by the exponential increase of the number of living cells that have to be simulated.\\
+Simulation is done using Gillespie's SSA algorithm \citep{Gillespie77}. Dating back to as early as 1945, when it was developed by Joseph Doob \citealp{Doob45} \citealp{Chung67}, modern Gillespie implementation includes improvements developed years after the invention of the algorithm such as $\tau$-leaping and Bayesian Approximation Method. Such improvements are essential since they would reduce computational cost of the simulation and in turn enable the simulation to scale further to accommodate more complex simulation involving larger systems -- in our case we could simulate more cells at the same time in possible more fine-grained time-resolved manner. In our case especially, such improvements are needed to accommodate the explosion of the number of cells within our culture. Specifically, an approximative method would prevent a bottleneck in simulation caused by the exponential increase of the number of living cells that have to be simulated.\\
 
 \textbf{Tau Leaping}
 
-Generally, tau-leaping works by performing all reactions happening for an interval of length tau before updating the parameters and propensity function. By allowing this kind of approximation we potentially allow more efficient simulation and thus increase the capability of the simulation to cope with larger systems. In our case, we use following tau,
+Generally, tau-leaping works by performing all reactions happening for an interval of length tau before updating the parameters and propensity function \citep{Cao06}. By introducing this kind of approximation we allow more efficient simulation and thus increase the capability of the simulation to cope with larger systems. In our case, we use following tau,
 
 \begin{equation}
 \tau = \frac{1}{a_0} ln \Gamma\label{eq:15}
@@ -263,7 +264,7 @@ with $a_0$ referring to total sum of reaction propensities and $\Gamma$ being un
 
 \subsubsection{Particle Weighting}
 
-Upon the completion of all simulations within one iteration, the quality of each simulation (and in turn, the particle) will be quantified. This quantification is implied in the weighting of the particle at the next iteration $w_{i}^k$. We assume the Gaussian distribution of particle around the measurement time at time $t=i$. Using this assumption, we can quantify our weight in following manner,
+Upon the completion of all simulations within one iteration, the quality of each simulation (and in turn, the particle) will be quantified. This quantification is implied in the weighting $w_{i}^k$ of the particle at the next iteration. We assume the Gaussian distribution of particle around the measurement time at time $t=i$. Using this assumption, we can quantify our weight in following manner,
 
 \begin{equation}
 w_i^k = P(\mathcal{D}_i | X_i^k) = \mathcal{N}(\mathcal{D}_i | X_i^k)\label{eq:16}
@@ -284,7 +285,7 @@ After each run, the parameters would then be updated using the underlying Gamma 
 Applying Bayes' Rule on the probability and independent assumption, we get following equation,
 
 \begin{equation}
-P(\Theta | X) = \frac{P(X | \Theta)}{P (X)} \prod_{i} P(\Theta_i)\label{eq:18}
+P(\Theta | X) = \frac{P(X | \Theta)}{P (X)} \prod_{i}^{P} P(\Theta_i)\label{eq:18}
 \end{equation}
 
 The Gamma Distribution is particularly favored for the update since a conjugate prior of Gamma Distribution is in turn Gamma distributed,
@@ -305,7 +306,7 @@ $r_d$ here refers to the number of times the d-th reaction was fired during the 
 G_d := \frac{1}{k_d} \sum_{l=0}^{i} a_{l}(X(S))\label{eq:21}
 \end{equation}
 
-Here, $k_d$ and $a_{l}(X(S))$ refer to reaction rate of the d-th reaction and trajectory-dependent propensity function, respectively.
+Here, $k_d$ and $a_{l}(X(S))$ refer to reaction rate of the d-th reaction and trajectory $X(S)$-dependent propensity function, respectively.
 
 \subsection{Reaction Models}
 
@@ -351,7 +352,7 @@ The propensity $a$ of decay reactions $k_3$ and $k_4$ roughly follows the mass a
 a_l = k_l \cdot A {;} \; l \in [3, 4]\label{eq:23}
 \end{equation}
 
-For production reactions $k_1$ and $k_2$ we assume Michaelis-Menten inhibition kinetics that influences the production of the species. In this assumption, the inhibiting characteristics of a species on another species negatively influences the creation rate of the species it inhibits. The propensity of the reactions are thus,
+with $A_3$ and $A_4$ referring to number of \texttt{Pu.1} and \texttt{GATA1} respectively. For production reactions $k_1$ and $k_2$ we assume Michaelis-Menten inhibition kinetics that influences the production of the species. In this assumption, the inhibiting characteristics of a species on another species negatively influences the creation rate of the species it inhibits. The propensity of the reactions are thus,
 
 \begin{equation}
 a_1 = k_1 \cdot (1 - \frac{\texttt{GATA1}^{n}}{\texttt{GATA1}^{n} + K_{P1}^{n}})\label{eq:24}
@@ -365,7 +366,7 @@ With $K_{P1}$ and $K_{P2}$ referring to the respective protein concentrations at
 
 \subsection{Models Comparison}
 
-Our framework enables us to test not only standard hematopoietic stem cell maturation as described above, it also allows us to compare it with other models. One method that could be used to compare models is Bayes Factors. It is done by performing ratio of the posterior probabilities of two models $M_1$ and $M_2$,
+Our framework enables us to test not only standard hematopoietic stem cell maturation as described above, it also allows us to compare it different models. One method that could be used to compare models is Bayes Factors. It is done by performing the ratio of the posterior probabilities of two models $M_1$ and $M_2$,
 
 \begin{equation}
 B_{M1, M2} = \frac{P(M_1 | \mathcal{D})}{P(M_2 | \mathcal{D})}\label{eq:26}
@@ -383,11 +384,13 @@ The marginal likelihood of model $P(\mathcal{D} | M)$ could be approximated usin
 P(\mathcal{D} | M) = P(\mathcal{D_0}) \prod_{l=1}^{N} P(\mathcal{D}_{i+1} | \mathcal{D}_{0:i}, M)\label{eq:28}
 \end{equation}
 
-Assuming a priori equally likely models, the factor of $P(M)$ in (\ref{eq:26}) cancels between the two models and the Bayes Factors now becomes the ratio of two marginal likelihood,
+Assuming a priori equally likely models, the factor of $P(D)$ in (\ref{eq:26}) cancels between the two models and the Bayes Factors now becomes the ratio of two marginal likelihood,
 
 \begin{equation}
 B_{M1, M2} = \frac{P(\mathcal{D} | M_1)}{P(\mathcal{D} | M_2)}\label{eq:29}
 \end{equation}
+
+Besides Bayes Factors, there also other methods commonly used to compare methods such as Akaike Information Criterion and Bayesian Information Criterion \citep{PosadaBuckley14, Bozdogan87}
 
 \section{Result}
 
@@ -457,7 +460,7 @@ Parameter & Prior & Tree 1 & Tree 2 & Tree 3 \\
 \end{table}
 
 \begin{figure}[h]
-\includegraphics[width=0.75\textwidth]{figures/real_data.pdf}
+\includegraphics[width=8cm]{figures/real_data.pdf}
 \caption{Result of the particle filtering algorithm for each parameter of the reaction model on timer series data of murine stem cells. The red lines show the prior distribution for the parameters used in the particle filtering. Tree lines represent the posterior distribution of fitted paramters after particle filter run  on the respective cell lineage tree.}  \label{fig:05}
 \end{figure}
 
@@ -547,6 +550,9 @@ Orkin, S. H., \& Zon, L. I. (2008). Hematopoiesis: an evolving paradigm for stem
 \bibitem[Filipczyk {\it et~al}, 2015]{Filipczyk15}
 Filipczyk, A., Marr, C., Hastreiter, S., Feigelman, J., Schwarzfischer, M., Hoppe, P. S., ... \& Hilsenbeck, O. (2015). Network plasticity of pluripotency transcription factors in embryonic stem cells. \textit{Nature cell biology}.
 
+\bibitem[Zhang {\it et~al}, 2003]{Zhang03}
+Zhang, J., Niu, C., Ye, L., Huang, H., He, X., Tong, W. G., ... \& Harris, S. (2003). Identification of the haematopoietic stem cell niche and control of the niche size. \textit{Nature}, \textbf{425(6960)}, 836-841.
+
 \bibitem[Doucet {\it et~al}, 1945]{Doucet01}
 Doucet, A., De Freitas, N., \& Gordon, N. (2001). An introduction to sequential Monte Carlo methods. In \textit{Sequential Monte Carlo methods in practice} (pp. 3-14). Springer New York.
 
@@ -609,6 +615,12 @@ Michaelis, L., \& Menten, M. L. (1913). Die kinetik der invertinwirkung. \textit
 
 \bibitem[Gelman {\it et~al}., 2009]{Gelman14}
 Gelman, A., Carlin, J. B., Stern, H. S., \& Rubin, D. B. (2014). \textit{Bayesian data analysis} (Vol. 2). Boca Raton, FL, USA: Chapman \& Hall/CRC.
+
+\bibitem[Nodelman {\it et~al}., 2003]{Nodelman03}
+Nodelman, U., Allen, C., \& Perry, J. (2003). \textit{Stanford encyclopedia of philosophy}.
+
+\bibitem[Cao {\it et~al}., 2003]{Cao06}
+Cao, Y., Gillespie, D. T., \& Petzold, L. R. (2006). Efficient step size selection for the tau-leaping simulation method. \textit{The Journal of chemical physics}, \textbf{124(4)}, 044109.
 
 \end{thebibliography}
 \end{document}

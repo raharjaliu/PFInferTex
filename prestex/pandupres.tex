@@ -24,7 +24,7 @@
 	\begin{figure}[ht]
 		\begin{center}
 			\includegraphics[height=2in]{figures/homatopoietic_focus.png}
-			~\footnote{Graf \& Enver, \textit{Nature}, 2009}
+			~\footnote{Graf \& Enver, 2009, \textit{Nature}}
 		\end{center}
 	\end{figure}
 \end{frame}
@@ -36,15 +36,47 @@
 	\begin{itemize}
 		\item Dynamics assumed to be a bistable toggle-switch system
 	\end{itemize}
+	\item Analysis on single-cell time-lapsed data
 	\end{itemize}
+	\begin{figure}[ht]
+		\begin{center}
+			\includegraphics[height=1.5in]{figures/cell-generations.png}
+			~\footnote{Feigelman, 2016, Ph.D. Thesis}
+		\end{center}
+	\end{figure}
 \end{frame}
 
 \begin{frame}{Problems}
 	\begin{itemize}
-	\item Stochaticity in single cell is more punctuatedy
+	\item Stochaticity in single cell resolution is more punctuated
+	\item Tree structure of the data add ore complexity: inheritance of information during inference process is not trivial
 	\end{itemize}
 \end{frame}
 
+\begin{frame}{Ideas}
+	\begin{itemize}
+	\item Sequential Monte Carlo simulations along the time-apsed data to infer "good" parameters
+	\item<2-> \textbf{problem:} Overfitting due to single-cell biased
+	\item<3-> \textbf{solution:} Inference across cell lineages
+	\item<4-> Inferred parameters from all simulated lineages are represented as distribution
+	\item<5-> Final inferred parameters are expected value $E$ of the distribution
+	\end{itemize}
+\end{frame}
 
+\begin{frame}{Particle Filtering (6)}
+
+\end{frame}
+
+\begin{frame}{Particle Filtering (7)}
+
+\end{frame}
+
+\begin{frame}{Particle Filtering (8)}
+
+\end{frame}
+
+\begin{frame}{Particle Filtering (9)}
+
+\end{frame}
 
 \end{document}

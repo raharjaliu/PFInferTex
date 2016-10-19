@@ -31,12 +31,12 @@
 
 \begin{frame}{Introduction (cont'd)}
 	\begin{itemize}
-	\item MEP and GMP yield not 50\% : 50\% as previously thought, but 70\% : 30\%
-	\item Assumed dynamics between \texttt{Pu.1} and \texttt{Gata1} in cell maturation fate
+		\item Assumed corss-inhibition dynamics between \texttt{Pu.1} and \texttt{Gata1} in cell maturation fate:
 	\begin{itemize}
-		\item Dynamics assumed to be a bistable toggle-switch system
+		\item Dynamics is assumed to be a bistable toggle-switch system
+		\item Lineage decision is a stochastics process resulting in uneven yield of MEP and GMP (70\% : 30\%)
 	\end{itemize}
-	\item Analysis on single-cell time-lapsed data
+	\item Analysis on single-cell time-lapsed data to infer parameters of this dynamics
 	\end{itemize}
 	\begin{figure}[ht]
 		\begin{center}
@@ -65,6 +65,16 @@
 
 \begin{frame}{Particle Filtering (6)}
 
+	A particle K is defined as a triple of trajectory X, parameter set $\theta$ and
+assumed model M,
+
+	\begin{equation}
+	K := (X, \theta, M)
+	\end{equation}
+	\begin{itemize}
+		\item Par
+		\item prior, posterior bzw Bayesian update rule
+	\end{itemize}
 \end{frame}
 
 \begin{frame}{Particle Filtering (7)}

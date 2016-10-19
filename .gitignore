@@ -182,4 +182,4 @@ TSWLatexianTemp*
 # Project Specific
 .DS_Store
 bioinformatics/.DS_Store
-
+prestex/.*

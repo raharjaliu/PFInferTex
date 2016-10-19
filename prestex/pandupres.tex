@@ -71,12 +71,46 @@
 
 \end{frame}
 
-\begin{frame}{Particle Filtering (8)}
+\begin{frame}{Particle Filtering: algorithm}
+	\begin{enumerate}
+		\item Initialization of parameters $\theta$.
+		\item Input of data $\mathcal{D}$.
+		\item Particle filtering routine:
 
+		\begin{enumerate}
+			\item Generation of initial particles for step i
+			
+			\begin{equation}
+				Ki := (K_{i1}, K_{i2}, \dots, K_{im})
+			\end{equation}
+
+			\item Simulation run of each particle $K_{ij}$
+			\item Weighting of each particle. The weight is a function of the probability of observing the data given the simulation result.
+
+			\begin{equation}
+				w_i^k = P(D_i | X_i^k) = \mathcal{N}(\mathcal{D}_i | X_i^k)
+			\end{equation}
+
+			\item Parameter update for every K,
+
+			\begin{equation}
+				\theta^k \propto P(\theta | X^k_{[to, ti]})\label{eq:13}
+			\end{equation}
+
+		\end{enumerate}
+
+		\item Model comparison.
+
+	\end{enumerate}
 \end{frame}
 
-\begin{frame}{Particle Filtering (9)}
-
+\begin{frame}{Particle Filtering: visualization}
+	\begin{figure}[ht]
+		\begin{center}
+			\includegraphics[height=2in]{figures/particle_filtering.png}
+			~\footnote{Feigelman, 2016, Ph.D. Thesis}
+		\end{center}
+	\end{figure}
 \end{frame}
 
 \end{document}

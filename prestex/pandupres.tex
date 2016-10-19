@@ -2,7 +2,10 @@
 {beamer}
 \mode<presentation>{}
 
-\usepackage{amsmath}
+\usepackage{amsmath}                  
+\usepackage{tikz}
+\usetikzlibrary{calc}                   
+   
 
 \newcommand\bayeseq{\mathrel{\overset{\makebox[0pt]{\mbox{\normalfont\tiny\sffamily Bayes}}}{=}}}
 
@@ -144,5 +147,67 @@ parameter $\theta$ given the observation $D$ from real data,
 		\end{center}
 	\end{figure}
 \end{frame}
+
+\begin{frame}{Reaction Model}
+	\begin{columns}
+		\begin{column}{0.5\textwidth}
+			\begin{itemize}
+				\item Simple model in line with cross inhibiton assumption
+				\item Inhibiton modeled trough inverse michaelis menten kinetik
+				\item Parameterize production and degredation rates as well as inhibition half point
+			\end{itemize}
+		\end{column}
+		\begin{column}{0.5\textwidth}  %%<--- here
+    			\begin{center}
+				\begin{tikzpicture}[node distance=2cm]
+
+\node (N0) {\Large $\varnothing$};
+\node [right of = N0] (N1) {\Large $\varnothing$};
+\node [below of = N0] (R0) {\Large \texttt{Pu.1}};
+\node [below of = N1] (R1) {\Large \texttt{GATA1}};
+\node [below of = R0] (N2) {\Large $\varnothing$};
+\node [below of = R1] (N3) {\Large $\varnothing$};
+
+\draw [->,ultra thick,blue] (N0) -- node[left, black] {$k_1$} (R0);
+\draw [->,ultra thick,blue] (N1) -- node[right, black] {$k_2$} (R1);
+\draw [->,ultra thick,blue] (R0) -- node[left, black] {$k_3$} (N2);
+\draw [->,ultra thick,blue] (R1) -- node[right, black] {$k_4$} (N3);
+
+\draw [-|,ultra thick,blue]
+($ (R0) + (3mm,-2.75mm) $)
+-- +(0,-3mm) %node[below, black] {$v_3$}
+-| ($ (R1) - (3mm,3mm) $) ;
+
+\draw [-|,ultra thick,blue]
+($ (R1) + (-3mm,2.75mm) $)
+-- +(0,3mm) %node[above, black] {$v_3$}
+-| ($ (R0) - (-3mm,-3mm) $);
+
+				\end{tikzpicture}
+     		\end{center}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{Model Comparison}
+
+\end{frame}
+
+\begin{frame}{Testing}
+
+\end{frame}
+
+\begin{frame}{Application on single cell time lapse data}
+
+\end{frame}
+
+\begin{frame}{Interpretation}
+
+\end{frame}
+
+\begin{frame}{Outlook}
+
+\end{frame}
+
 
 \end{document}

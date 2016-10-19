@@ -1,6 +1,11 @@
 \documentclass[pdf]
 {beamer}
 \mode<presentation>{}
+
+\usepackage{amsmath}
+
+\newcommand\bayeseq{\mathrel{\overset{\makebox[0pt]{\mbox{\normalfont\tiny\sffamily Bayes}}}{=}}}
+
 %% preamble
 \title{Model inference from protein time-course in Hematopoietic Stem Cells (HSC)}
 \subtitle{}
@@ -65,21 +70,39 @@
 
 \begin{frame}{Particle Filtering}
 
-	A particle K is defined as a triple of trajectory X (\textit{time series data}), parameter set $\theta$ and
-assumed model M,
-
-	\begin{equation}
-	K := (X, \theta, M)
-	\end{equation}
 	\begin{itemize}
-		\item $X$ describes the simulation trajectory
-		\item $M$ describes the model of the simulation
-		\item $\theta$ describes the parameters of the simulation's model
+
+	\item \textbf{Particle}
+	A particle K is defined as a triple of previous simulation trajectory $X$, parameter set $\theta$ and
+assumed model $M$,
+
+		\begin{equation}
+		K := (X, \theta, M)
+		\end{equation}
+		
+	\item \textbf{Particle filtering} is an parameters inference method that consists of: (1) \textit{sequentially} performing simulations using \textit{particles}, (2) \textit{updating} the \textit{prior} assumptions of the model using the results of the simulations and (3) rerunning the simulations using updated assumptions (\textit{posterior}).
+	
 	\end{itemize}
+
 \end{frame}
 
-\begin{frame}{Particle Filtering (7)}
+\begin{frame}{Particle Filtering: update rule}
 
+	\begin{itemize}
+	\item \textbf{Posterior}
+	
+	After each simulation step, a posterior describes the probability of having the trajectory $X$ and
+parameter $\theta$ given the observation $D$ from real data,
+
+	\begin{equation}
+	P (X, \theta |D) \bayeseq \frac{P(D|X, \theta) P(X, \theta)}{P(D)}
+	\end{equation}
+	
+	This Bayesian update rule is used to update parameters by looking at how well does the simulation follow the real data. I.e. after an iteration we will choose parameters belonging to particles that simulate the trajectory well w.r.t. experimental data.
+	
+	\item \textbf{Gamma Distribution} is used as prior since a posterior of a gamma is in turn gamma distributed (\textit{prior conjugate}).
+	\end{itemize}
+	
 \end{frame}
 
 \begin{frame}{Particle Filtering: algorithm}
@@ -105,12 +128,10 @@ assumed model M,
 			\item Parameter update for every K,
 
 			\begin{equation}
-				\theta^k \propto P(\theta | X^k_{[to, ti]})\label{eq:13}
+				\theta^k \propto P(\theta | X^k_{[to, ti]})
 			\end{equation}
 
 		\end{enumerate}
-
-		\item Model comparison.
 
 	\end{enumerate}
 \end{frame}

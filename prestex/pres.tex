@@ -26,7 +26,7 @@
 %% normal frame
 \begin{frame}{Introduction}
 	\begin{itemize}
-		\item Dynamics of hematopoetic stem cell maturation cell from Common Myeloid Progenitor (CMP) to Megakaryocyte-Erythroid Progenitor (MEP) and Granulocyte-Macrophage Progenitor (GMP) is our focus.
+		\item Dynamics of hematopoetic stem cell lineage decision from Common Myeloid Progenitor (CMP) to Megakaryocyte-Erythroid Progenitor (MEP) and Granulocyte-Macrophage Progenitor (GMP) is our focus.
 	\end{itemize}
 	
 	\begin{figure}[ht]
@@ -62,6 +62,13 @@
 	\end{itemize}
 	\textbf{Branched data set}\\
 	Tree structure of the data add more complexity: inheritance of information during inference process is not trivial
+	
+	\begin{figure}[ht]
+		\begin{center}
+			\includegraphics[height=1.5in]{figures/cell-generations.png}
+			~\footnote{Feigelman, 2016, Ph.D. Thesis}
+		\end{center}
+	\end{figure}
 \end{frame}
 
 \begin{frame}{Ideas}
@@ -157,7 +164,7 @@ parameter $\theta$ given the observation $D$ from real data,
 			\begin{itemize}
 				\item Simple model in line with cross inhibiton assumption.
 				\item Inhibiton modeled trough inverse michaelis menten kinetics.
-				\item Parameterize production and degredation rates $k_i$ as well as inhibition contstant $K_Y^n$.
+				\item Parameterize production and degredation rates $k_i$ as well as inhibition contstant $K_Y$.
 			\end{itemize}
 		\end{column}
 		\begin{column}{0.5\textwidth}  %%<--- here
@@ -178,12 +185,14 @@ parameter $\theta$ given the observation $D$ from real data,
 
 \draw [-|,ultra thick,blue]
 ($ (R0) + (3mm,-2.75mm) $)
--- +(0,-3mm) %node[below, black] {$v_3$}
+-- +(0,-3mm) 
+-- +(0.75,-3mm) node[below, black]{$K_{P1}$}
 -| ($ (R1) - (3mm,3mm) $) ;
 
 \draw [-|,ultra thick,blue]
 ($ (R1) + (-3mm,2.75mm) $)
 -- +(0,3mm) %node[above, black] {$v_3$}
+-- +(-0.75,3mm) node[above, black]{$K_{P2}$}
 -| ($ (R0) - (-3mm,-3mm) $);
 
 				\end{tikzpicture}
@@ -212,7 +221,7 @@ parameter $\theta$ given the observation $D$ from real data,
 
 \begin{frame}{Model Comparison}
 	\begin{itemize}
-		\item Compare different models via Bayes Factors:
+		\item Compare performance of different models via Bayes Factors:
 	\end{itemize}
 	
 	\begin{equation}
@@ -273,7 +282,7 @@ parameter $\theta$ given the observation $D$ from real data,
 	\begin{itemize}
 		\item Parameters of reaction model have varying susceptibility to fitting trough particle filtering.
 		\item Model cannot accuratly describe the dynamic of the transcript factors.
-		\item Recent finding (Hoppe et al. 2016) on the same data suggest the lineage choice to be independent from the transcription factor ratios.
+		\item Recent finding (Hoppe et al., 2016, Nature) on the same data suggest the lineage choice to be independent from the transcription factor ratios.
 		\item Particle filtering cannot infer the prescene of the external decision factor.
 	\end{itemize}
 \end{frame}
@@ -282,7 +291,7 @@ parameter $\theta$ given the observation $D$ from real data,
 	\begin{itemize}
 		\item Particle filtering enable  the paramterization of models using time lapse data of cell lineage trees.
 		\item Using the weight of particle trajectories models can be compared, allowing quantified comparison of theories.
-		\item It would be interesting to know whether the decision process is influenced by several latent factors under different reaction model.
+		\item It would be interesting to know whether the decision process is really influenced by several latent factors under different reaction model.
 	\end{itemize}
 \end{frame}
 

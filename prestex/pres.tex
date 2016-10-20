@@ -26,7 +26,7 @@
 %% normal frame
 \begin{frame}{Introduction}
 	\begin{itemize}
-		\item Dynamics of hematopoetic stem cell maturation cell from Common Myeloid Progenitor (CMP) to Megakaryocyte-Erythroid Progenitor (MEP) and Granulocyte-Macrophage Progenitor (GMP)
+		\item Dynamics of hematopoetic stem cell maturation cell from Common Myeloid Progenitor (CMP) to Megakaryocyte-Erythroid Progenitor (MEP) and Granulocyte-Macrophage Progenitor (GMP) is our focus.
 	\end{itemize}
 	
 	\begin{figure}[ht]
@@ -39,12 +39,12 @@
 
 \begin{frame}{Introduction (cont'd)}
 	\begin{itemize}
-		\item Assumed corss-inhibition dynamics between \texttt{Pu.1} and \texttt{Gata1} in cell maturation fate:
+		\item Assumed corss-inhibition dynamics between transcription factors \texttt{Pu.1} and \texttt{Gata1} in cell maturation fate:
 	\begin{itemize}
 		\item Dynamics is assumed to be a bistable toggle-switch system
 		\item Lineage decision is a stochastics process resulting in uneven yield of MEP and GMP (70\% : 30\%)
 	\end{itemize}
-	\item Analysis on single-cell time-lapsed data to infer parameters of this dynamics
+	\item Analysis on single-cell time-lapsed data to infer parameters of this dynamics.
 	\end{itemize}
 	\begin{figure}[ht]
 		\begin{center}
@@ -55,19 +55,22 @@
 \end{frame}
 
 \begin{frame}{Problems}
+	\textbf{Stochasticity of the system}
 	\begin{itemize}
-	\item Stochaticity in single cell resolution is more punctuated
-	\item Tree structure of the data add ore complexity: inheritance of information during inference process is not trivial
+	\item Biophysical reaction is stochastic: reaction mechanism is inherently non-deterministic.
+	\item Single cell analysis exposes stochasticity of the system: deterministic approaches not suitable in this case
 	\end{itemize}
+	\textbf{Branched data set}\\
+	Tree structure of the data add more complexity: inheritance of information during inference process is not trivial
 \end{frame}
 
 \begin{frame}{Ideas}
 	\begin{itemize}
-	\item Sequential Monte Carlo simulations along the time-apsed data to infer "good" parameters
-	\item<2-> \textbf{problem:} Overfitting due to single-cell biased
-	\item<3-> \textbf{solution:} Inference across cell lineages
-	\item<4-> Inferred parameters from all simulated lineages are represented as distribution
-	\item<5-> Final inferred parameters are expected value $E$ of the distribution
+	\item Sequential Monte Carlo simulations along the time-lapsed data to infer sound parameters.
+	\item<2-> \textbf{problem:} Overfitting due to single-cell biased.
+	\item<3-> \textbf{solution:} Inference across cell lineages.
+	\item<4-> Inferred parameters from all simulated lineages are represented as distribution.
+	\item<5-> Final inferred parameters are expected value $E$ of the distribution.
 	\end{itemize}
 \end{frame}
 
@@ -75,7 +78,7 @@
 
 	\begin{itemize}
 
-	\item \textbf{Particle}
+	\item \textbf{Particle}\\
 	A particle K is defined as a triple of previous simulation trajectory $X$, parameter set $\theta$ and
 assumed model $M$,
 
@@ -115,20 +118,20 @@ parameter $\theta$ given the observation $D$ from real data,
 		\item Particle filtering routine:
 
 		\begin{enumerate}
-			\item Generation of initial particles for step i
+			\item Generation of initial particles for step i using weighting $w_{i-1}$ from previous iteration:
 			
 			\begin{equation}
 				Ki := (K_{i1}, K_{i2}, \dots, K_{im})
 			\end{equation}
 
-			\item Simulation run of each particle $K_{ij}$
-			\item Weighting of each particle. The weight is a function of the probability of observing the data given the simulation result.
+			\item Simulation run of each particle $K_{ij}$.
+			\item Weighting of each particle. The weight is a function of the probability of observing the data given the simulation result:
 
 			\begin{equation}
 				w_i^k = P(D_i | X_i^k) = \mathcal{N}(\mathcal{D}_i | X_i^k)
 			\end{equation}
 
-			\item Parameter update for every K,
+			\item Parameter update for every K:
 
 			\begin{equation}
 				\theta^k \propto P(\theta | X^k_{[to, ti]})
@@ -152,9 +155,9 @@ parameter $\theta$ given the observation $D$ from real data,
 	\begin{columns}
 		\begin{column}{0.5\textwidth}
 			\begin{itemize}
-				\item Simple model in line with cross inhibiton assumption
-				\item Inhibiton modeled trough inverse michaelis menten kinetik
-				\item Parameterize production and degredation rates as well as inhibition half point
+				\item Simple model in line with cross inhibiton assumption.
+				\item Inhibiton modeled trough inverse michaelis menten kinetics.
+				\item Parameterize production and degredation rates $k_i$ as well as inhibition contstant $K_Y^n$.
 			\end{itemize}
 		\end{column}
 		\begin{column}{0.5\textwidth}  %%<--- here
@@ -184,12 +187,15 @@ parameter $\theta$ given the observation $D$ from real data,
 -| ($ (R0) - (-3mm,-3mm) $);
 
 				\end{tikzpicture}
-     		\end{center}
+     		\end{center}		
 		\end{column}
 	\end{columns}
+	
+	$$a_i = k_i \cdot (1 - \frac{X_i^{n}}{X_i^{n} + K_{Y}^{n}})$$
+	
 \end{frame}
 	
-\begin{frame}{Testing}
+\begin{frame}{Evaluation on synthetic data with known model}
 	%\begin{figure}
 		%\begin{tabular}{ccc}
   			%\includegraphics[width=1.3in]{figures/test_dist1.pdf} &   \includegraphics[width=1.3in]{figures/test_dist3.pdf}  & \includegraphics[width=1.3in]{figures/test_dist5.pdf}\\
@@ -206,7 +212,7 @@ parameter $\theta$ given the observation $D$ from real data,
 
 \begin{frame}{Model Comparison}
 	\begin{itemize}
-		\item Compare different models via Bayes Factors
+		\item Compare different models via Bayes Factors:
 	\end{itemize}
 	
 	\begin{equation}
@@ -214,7 +220,7 @@ parameter $\theta$ given the observation $D$ from real data,
 	\end{equation}
 
 	\begin{itemize}
-		\item The average weight of the particle trajectories are used as Bayes Factor
+		\item The average weight of the particle trajectories are used as Bayes Factor:
 	\end{itemize}
 
 	\begin{equation}
@@ -223,12 +229,12 @@ parameter $\theta$ given the observation $D$ from real data,
 
 \end{frame}
 
-\begin{frame}{Model Comparison Test}
+\begin{frame}{Model Comparison}
 		\begin{columns}
 		\begin{column}{0.5\textwidth}
 			\begin{itemize}
-				\item Independent model used on synthetic data set 
-				\item Model comparison by Bayes factors
+				\item Independent model used on synthetic data set.
+				\item Model comparison by Bayes factors.
 			\end{itemize}
 		\end{column}
 		\begin{column}{0.5\textwidth}  %%<--- here
@@ -255,7 +261,7 @@ parameter $\theta$ given the observation $D$ from real data,
 			\end{equation}
 \end{frame}
 
-\begin{frame}{Single cell time lapse data}
+\begin{frame}{Results on experiment data}
 	\begin{figure}[ht]
 		\begin{center}
 			\includegraphics[height=2.5in]{figures/real_vertical.PNG}
@@ -265,25 +271,28 @@ parameter $\theta$ given the observation $D$ from real data,
 
 \begin{frame}{Interpretation}
 	\begin{itemize}
-		\item Parameters of reaction model have varying susceptibility to fitting trough particle filtering
-		\item Model cannot accuratly describe the dynamic of the transcript factors
-		\item Recent finding (Hoppe et al. 2016) on the same data suggest the lineage choice to be independent from the transcription factor ratios
-		\item Particle filtering cannot infer the prescene of the external decision factor
+		\item Parameters of reaction model have varying susceptibility to fitting trough particle filtering.
+		\item Model cannot accuratly describe the dynamic of the transcript factors.
+		\item Recent finding (Hoppe et al. 2016) on the same data suggest the lineage choice to be independent from the transcription factor ratios.
+		\item Particle filtering cannot infer the prescene of the external decision factor.
 	\end{itemize}
 \end{frame}
 
-\begin{frame}{Conclustion \& Outlook}
+\begin{frame}{Conclusion \& Outlook}
 	\begin{itemize}
-		\item Particle filtering enable  the paramterization of models using time lapse data of cell lineage trees
-		\item Using the weight of particle trajectories models can be compared, allowing quantified comparison of theories 
-		\item 
+		\item Particle filtering enable  the paramterization of models using time lapse data of cell lineage trees.
+		\item Using the weight of particle trajectories models can be compared, allowing quantified comparison of theories.
+		\item It would be interesting to know whether the decision process is influenced by several latent factors under different reaction model.
 	\end{itemize}
 \end{frame}
 
-\begin{frame}{Questions}
-	\begin{center}
-		Questions?
-	\end{center}
+\begin{frame}{References}
+
+	\begin{itemize}
+		\item Feigelman, J. (2016). "Stochastic and deterministic methods for the analysis of Nanog dynamics in mouse embryonic stem cells." PhD Thesis, Technische Universit\"at M\"unchen, Munich, Germany.
+		\item Hoppe, P.S., Schwarzfischer, M., Loeffler, D.,  Kokkaliaris, K.D., Hilsenbeck, O., Mortz, N., ... \& Etzrodt, M. (2016). Early myeloid lineage choice is not initiated by random PU.1 to GATA1 protein ratios. \textit{Nature}, \textbf{535(7611)}, 299-302.
+		\item Graf, T., \& Enver, T. (2009). Forcing cells to change lineages. \textit{Nature}, \textbf{462(7273)}, 587-594.
+	\end{itemize}
 \end{frame}
 
 
